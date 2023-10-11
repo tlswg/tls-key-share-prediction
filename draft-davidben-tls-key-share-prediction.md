@@ -140,7 +140,7 @@ If the client has trusted, prior knowledge that the server implements a selectio
 
 # DNS Service Parameter
 
-This section defines the `tls-supported-groups` SvcParamKey {{I-D.ietf-dnsop-svcb-https}}, which specifies the endpoint's TLS supported group preferences, as a sequence of TLS NamedGroup codepoints in order of decreasing preference.
+This section defines the `tls-supported-groups` SvcParamKey {{I-D.ietf-dnsop-svcb-https}}, which specifies the endpoint's TLS supported group preferences, as a sequence of TLS NamedGroup codepoints in order of decreasing preference. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
 
 ## Format
 
@@ -158,13 +158,7 @@ A service MUST NOT configure this service parameter if any of the corresponding 
 
 When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server preferences against its own and predicts named groups to send in the `key_share` extension. In evaluating the server preferences, the client MUST ignore any codepoints that it does not support or recognize.
 
-If one of the following hold, the client MAY use the result to predict key shares in the initial ClientHello:
-
-* The HTTPS or SVCB record was authenticated by the origin server, or
-
-* The resulting prediction is consistent with client preferences, as described in {{tls-client-behavior}}
-
-Otherwise, the client SHOULD ignore the parameter and compute `key_share` via its usual logic. Note a secure connection to the DNS resolver, such as DNS over TLS {{?RFC7858}} or DNS over HTTPS {{?RFC8484}}, is not sufficient to authenticate the record by the origin server.
+If the resulting prediction is consistent with client preferences, as described in {{tls-client-behavior}}, the client MAY use the result to predict key shares in the initial ClientHello. Otherwise, the client SHOULD ignore the parameter and compute `key_share` via its usual logic.
 
 ## Misprediction
 
