@@ -19,11 +19,10 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
-category: info
+title: TLS Key Share Prediction
+docname: draft-davidben-tls-key-share-prediction-latest
+category: std
 
-docname: draft-todo-yourname-protocol-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
