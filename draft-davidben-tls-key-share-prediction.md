@@ -156,9 +156,9 @@ A service MUST NOT configure this service parameter if any of the corresponding 
 
 ## Client Behavior {#dns-client-behavior}
 
-When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server preferences against its own and predicts named groups to send in the `key_share` extension. In evaluating the server preferences, the client MUST ignore any codepoints that it does not support or recognize.
+When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server preferences against its own to predict which named group will be chosen. If this result is a prediction-safe named group (see {{prediction-safe-named-groups}}), the client sends a `key_share` extension containing just that named group in the initial ClientHello. Restricting to prediction-safe groups ensures the client's behavior meets the requirements in {{tls-client-behavior}}.
 
-If the resulting prediction is consistent with client preferences, as described in {{tls-client-behavior}}, the client MAY use the result to predict key shares in the initial ClientHello. Otherwise, the client SHOULD ignore the parameter and compute `key_share` via its usual logic.
+When evaluating the server preferences, the client MUST ignore any codepoints that it does not support or recognize.
 
 ## Misprediction
 
