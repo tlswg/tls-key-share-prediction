@@ -1,0 +1,137 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2024-03-05T01:07:24.242285+00:00",
+  "repo": "davidben/tls-key-share-prediction",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOKfBef850P5fk",
+      "title": "Rephrase server selection algorithm to select a list from supported_groups",
+      "url": "https://github.com/davidben/tls-key-share-prediction/issues/1",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@bwesterb had an idea that we should say:\r\n1. Pick a set of equipreference groups from supported_groups\r\n2. Pick among the equipreference groups using key_share\r\n\r\nThat's probably a bit clearer. Filing this so I don't forget.",
+      "createdAt": "2023-10-18T17:50:56Z",
+      "updatedAt": "2023-10-18T17:50:56Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 2,
+      "id": "I_kwDOKfBef852lqx7",
+      "title": "As an ECH extension?",
+      "url": "https://github.com/davidben/tls-key-share-prediction/issues/2",
+      "state": "CLOSED",
+      "author": "sayrer",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "One thing that occurred to me is that there are use cases that could require ECH, so it could be better to include this key-share-prediction in the ECHConfig in that case?\r\n\r\nhttps://www.ietf.org/archive/id/draft-ietf-tls-esni-17.html#name-configuration-extensions\r\n\r\nWouldn't that help the concerns about authenticity of DNS data in the draft's current SVCB?",
+      "createdAt": "2023-11-12T21:36:37Z",
+      "updatedAt": "2023-11-14T21:15:24Z",
+      "closedAt": "2023-11-14T18:54:05Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "I don't see how this would help. An ECHConfig is no more authentic than anything else you get over DNS, and tying this to ECH doesn't make a whole lot of sense. (If you have multiple ECHConfigs in a single SVCB, they'd all have the same information.)",
+          "createdAt": "2023-11-12T21:59:53Z",
+          "updatedAt": "2023-11-12T21:59:53Z"
+        },
+        {
+          "author": "sayrer",
+          "authorAssociation": "NONE",
+          "body": "If someone downgraded the hint in the ECHConfig, and the server requires ECH, wouldn't the handshake fail due to this step? https://www.ietf.org/archive/id/draft-ietf-tls-esni-17.html#section-6.1-5",
+          "createdAt": "2023-11-14T17:49:36Z",
+          "updatedAt": "2023-11-14T17:49:36Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Then the server will handshake with the public name and we'd have much the same problem. Unless the outer ClientHello uses different key shares, but that defeats the point of doing a prediction.\r\n\r\nI also do not think it makes sense to tie this to ECH. The authenticity concerns are already resolved by fixing the negotiation algorithm, which is getting done in 8446bis. And resolving the authenticity concern does not remove the need to fix the negotiation algorithm because there are non-attacker-influenced problems here.",
+          "createdAt": "2023-11-14T18:54:05Z",
+          "updatedAt": "2023-11-14T18:54:05Z"
+        },
+        {
+          "author": "sayrer",
+          "authorAssociation": "NONE",
+          "body": "I see, you're right as of the current ECH draft: `Otherwise, if all candidate ECHConfig values fail to decrypt the extension, the client-facing server MUST ignore the extension and proceed with the connection using ClientHelloOuter`\r\n\r\nI'm not sure the draft should require the server to proceed with the connection here, but that's for ECH.",
+          "createdAt": "2023-11-14T18:59:40Z",
+          "updatedAt": "2023-11-14T18:59:40Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "ECH is undeployable without that step. It's how the recovery flow works. Removing it would also break our ability to do GREASE.",
+          "createdAt": "2023-11-14T19:01:23Z",
+          "updatedAt": "2023-11-14T19:01:23Z"
+        },
+        {
+          "author": "sayrer",
+          "authorAssociation": "NONE",
+          "body": "Oh, I'm not against that flow at all. I think you could get the same effect by sending no `retry_configs`* and refusing non-ECH ClientHello messages, though.\r\n\r\nAlso, I didn't mean to suggest this way /instead/ of what you have now. It just seemed like a better way if the server is going to require ECH.\r\n\r\n* (`If the server provided \"retry_configs\"`, Section [6.1.6](https://www.ietf.org/archive/id/draft-ietf-tls-esni-17.html#section-6.1.6))",
+          "createdAt": "2023-11-14T19:17:04Z",
+          "updatedAt": "2023-11-14T19:38:22Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "> Oh, I'm not against that flow at all. I think you could get the same effect by sending no retry_configs* and refusing non-ECH ClientHello messages, though.\r\n\r\nIn order to get that far, and authenticate the retry configs, we need the server to handshake with the public name, i.e. use the outer ClientHello.\r\n\r\nIt's also a bit late to be doing such a fundamental change to ECH.\r\n\r\n> Also, I didn't mean to suggest this way /instead/ of what you have now. It just seemed like a better way if the server is going to require ECH.\r\n\r\nI'm not very positive on defining two different redundant mechanisms, when one already fully handles the cases we care about. :-p",
+          "createdAt": "2023-11-14T21:15:24Z",
+          "updatedAt": "2023-11-14T21:15:24Z"
+        }
+      ]
+    }
+  ],
+  "pulls": []
+}
