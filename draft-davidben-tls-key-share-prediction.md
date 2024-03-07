@@ -144,7 +144,7 @@ This section defines the `tls-supported-groups` SvcParamKey {{I-D.ietf-dnsop-svc
 
 ## Format
 
-The presentation `value` of the SvcParamValue is a comma-separated list ({{Appendix A.1 of I-D.ietf-dnsop-svcb-https}}) of decimal integers between 0 and 65536 in ASCII. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
+The presentation `value` of the SvcParamValue is a comma-separated list ({{Appendix A.1 of I-D.ietf-dnsop-svcb-https}}) of decimal integers between 0 and 65535 (inclusive) in ASCII. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
 
 The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid.
 
