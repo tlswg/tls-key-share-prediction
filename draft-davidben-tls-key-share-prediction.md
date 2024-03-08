@@ -55,7 +55,7 @@ This document resolves the ambiguity in three ways:
 
 It is expected that all post-quantum key encapsulation methods (KEMs) will fall in the last category. Post-quantum KEMs have large keys and ciphertexts, so bandwidth concerns are particularly pronounced.
 
-This document additionally defines a method for servers to declare their named group preferences in DNS, using SVCB or HTTPS resource records {{!I-D.ietf-dnsop-svcb-https}}. This allows the client to predict key shares more accurately.
+This document additionally defines a method for servers to declare their named group preferences in DNS, using SVCB or HTTPS resource records {{!RFC9460}}. This allows the client to predict key shares more accurately.
 
 
 # Conventions and Definitions
@@ -140,11 +140,11 @@ If the client has trusted, prior knowledge that the server implements a selectio
 
 # DNS Service Parameter
 
-This section defines the `tls-supported-groups` SvcParamKey {{I-D.ietf-dnsop-svcb-https}}, which specifies the endpoint's TLS supported group preferences, as a sequence of TLS NamedGroup codepoints in order of decreasing preference. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
+This section defines the `tls-supported-groups` SvcParamKey {{RFC9460}}, which specifies the endpoint's TLS supported group preferences, as a sequence of TLS NamedGroup codepoints in order of decreasing preference. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
 
 ## Format
 
-The presentation `value` of the SvcParamValue is a comma-separated list ({{Appendix A.1 of I-D.ietf-dnsop-svcb-https}}) of decimal integers between 0 and 65535 (inclusive) in ASCII. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
+The presentation `value` of the SvcParamValue is a comma-separated list ({{Appendix A.1 of RFC9460}}) of decimal integers between 0 and 65535 (inclusive) in ASCII. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
 
 The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid.
 
@@ -200,7 +200,7 @@ This document additional adds the following note to the registry:
 
 ## Updates to the Service Parameter Keys Registry
 
-This document updates the Service Parameter Keys registry {{I-D.ietf-dnsop-svcb-https}} with the following entry:
+This document updates the Service Parameter Keys registry {{RFC9460}} with the following entry:
 
 | Number | Name                 | Meaning                  | Format Reference            | Change Controller |
 |--------|----------------------|--------------------------|-----------------------------|-------------------|
