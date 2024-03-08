@@ -141,8 +141,8 @@ Table of Contents
 
    This document additionally defines a method for servers to declare
    their named group preferences in DNS, using SVCB or HTTPS resource
-   records [I-D.ietf-dnsop-svcb-https].  This allows the client to
-   predict key shares more accurately.
+   records [RFC9460].  This allows the client to predict key shares more
+   accurately.
 
 2.  Conventions and Definitions
 
@@ -304,20 +304,18 @@ Table of Contents
 
 4.  DNS Service Parameter
 
-   This section defines the tls-supported-groups SvcParamKey
-   [I-D.ietf-dnsop-svcb-https], which specifies the endpoint's TLS
-   supported group preferences, as a sequence of TLS NamedGroup
-   codepoints in order of decreasing preference.  This allows clients
-   connecting to the endpoint to reduce the likelihood of needing a
-   HelloRetryRequest.
+   This section defines the tls-supported-groups SvcParamKey [RFC9460],
+   which specifies the endpoint's TLS supported group preferences, as a
+   sequence of TLS NamedGroup codepoints in order of decreasing
+   preference.  This allows clients connecting to the endpoint to reduce
+   the likelihood of needing a HelloRetryRequest.
 
 4.1.  Format
 
    The presentation value of the SvcParamValue is a comma-separated list
-   (Appendix A.1 of [I-D.ietf-dnsop-svcb-https]) of decimal integers
-   between 0 and 65535 (inclusive) in ASCII.  Any other value is a
-   syntax error.  To enable simpler parsing, this SvcParam MUST NOT
-   contain escape sequences.
+   (Appendix A.1 of [RFC9460]) of decimal integers between 0 and 65535
+   (inclusive) in ASCII.  Any other value is a syntax error.  To enable
+   simpler parsing, this SvcParam MUST NOT contain escape sequences.
 
    The wire format of the SvcParamValue is a sequence of 2-octet numeric
    values in network byte order.  An empty list of values is invalid.
@@ -422,8 +420,8 @@ Table of Contents
 
 6.2.  Updates to the Service Parameter Keys Registry
 
-   This document updates the Service Parameter Keys registry
-   [I-D.ietf-dnsop-svcb-https] with the following entry:
+   This document updates the Service Parameter Keys registry [RFC9460]
+   with the following entry:
 
    +======+======================+===========+===========+============+
    |Number| Name                 | Meaning   | Format    | Change     |
@@ -438,14 +436,6 @@ Table of Contents
                                  Table 1
 
 7.  Normative References
-
-   [I-D.ietf-dnsop-svcb-https]
-              Schwartz, B. M., Bishop, M., and E. Nygren, "Service
-              Binding and Parameter Specification via the DNS (SVCB and
-              HTTPS Resource Records)", Work in Progress, Internet-
-              Draft, draft-ietf-dnsop-svcb-https-12, 11 March 2023,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-
-              svcb-https-12>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -470,6 +460,11 @@ Table of Contents
               Sustain Extensibility (GREASE) to TLS Extensibility",
               RFC 8701, DOI 10.17487/RFC8701, January 2020,
               <https://www.rfc-editor.org/rfc/rfc8701>.
+
+   [RFC9460]  Schwartz, B., Bishop, M., and E. Nygren, "Service Binding
+              and Parameter Specification via the DNS (SVCB and HTTPS
+              Resource Records)", RFC 9460, DOI 10.17487/RFC9460,
+              November 2023, <https://www.rfc-editor.org/rfc/rfc9460>.
 
 Acknowledgments
 
