@@ -4,9 +4,9 @@
 
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                Google LLC
-Updates: 8446 (if approved)                              16 October 2023
+Updates: 8446 (if approved)                                 8 March 2024
 Intended status: Standards Track                                        
-Expires: 18 April 2024
+Expires: 9 September 2024
 
 
                         TLS Key Share Prediction
@@ -53,11 +53,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 April 2024.
+   This Internet-Draft will expire on 9 September 2024.
 
 Copyright Notice
 
-   Copyright (c) 2023 IETF Trust and the persons identified as the
+   Copyright (c) 2024 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -315,9 +315,9 @@ Table of Contents
 
    The presentation value of the SvcParamValue is a comma-separated list
    (Appendix A.1 of [I-D.ietf-dnsop-svcb-https]) of decimal integers
-   between 0 and 65536 in ASCII.  Any other value is a syntax error.  To
-   enable simpler parsing, this SvcParam MUST NOT contain escape
-   sequences.
+   between 0 and 65535 (inclusive) in ASCII.  Any other value is a
+   syntax error.  To enable simpler parsing, this SvcParam MUST NOT
+   contain escape sequences.
 
    The wire format of the SvcParamValue is a sequence of 2-octet numeric
    values in network byte order.  An empty list of values is invalid.
@@ -441,9 +441,9 @@ Table of Contents
 
    [I-D.ietf-dnsop-svcb-https]
               Schwartz, B. M., Bishop, M., and E. Nygren, "Service
-              binding and parameter specification via the DNS (DNS SVCB
-              and HTTPS RRs)", Work in Progress, Internet-Draft, draft-
-              ietf-dnsop-svcb-https-12, 11 March 2023,
+              Binding and Parameter Specification via the DNS (SVCB and
+              HTTPS Resource Records)", Work in Progress, Internet-
+              Draft, draft-ietf-dnsop-svcb-https-12, 11 March 2023,
               <https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-
               svcb-https-12>.
 
