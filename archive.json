@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-07T00:56:29.915748+00:00",
+  "timestamp": "2024-03-10T01:12:07.273143+00:00",
   "repo": "davidben/tls-key-share-prediction",
   "labels": [
     {
@@ -131,7 +131,138 @@
           "updatedAt": "2023-11-14T21:15:24Z"
         }
       ]
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOKfBef86Bpdw3",
+      "title": "Is it simpler to ban escapes or not in the presentation syntax?",
+      "url": "https://github.com/davidben/tls-key-share-prediction/issues/4",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The presentation language currently says:\r\n\r\n> The presentation `value` of the SvcParamValue is a comma-separated list ({{Appendix A.1 of I-D.ietf-dnsop-svcb-https}}) of decimal integers between 0 and 65535 (inclusive) in ASCII. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.\r\n\r\n@martinthomson points out it's better to avoid special parsing rules. I think I borrowed this from https://www.rfc-editor.org/rfc/rfc9460.html#section-7.2-2 and inferred that avoiding the special parsing rule was the convention for presentation of 16-bit integers.\r\n\r\nI don't care either way and figure we should do whatever is conventional/convenient here. The behavior of \"port\" is a point towards banning escapes. But if folks think allowing them is better, that's cool too.\r\n\r\nSee https://github.com/davidben/tls-key-share-prediction/pull/3#discussion_r1516975880",
+      "createdAt": "2024-03-08T01:54:24Z",
+      "updatedAt": "2024-03-08T01:54:24Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOKfBef86BprtO",
+      "title": "\"you say MUST, but do you really mean it?\"",
+      "url": "https://github.com/davidben/tls-key-share-prediction/issues/5",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "It took me a while to understand how the safe/unsafe distinction and the server behaviour were intended to interact.\r\n\r\nThe mechanism seems a bit convoluted, but it boils down to a client needing to include key shares for its most-preferred groups, unless it can be confident that the server will do the right thing when a more-preferred group lacks a share (which is what this draft attempts to mandate).\r\n\r\nI would prefer not to include this mandate.  There are lots of reasons that this \"MUST\" might be ignored.\r\n\r\nMostly, it's just that an extra round trip is a giant pain. If you have a non-PQ share, but might prefer to use a hybrid-PQ KEM, you are faced with a choice: is your preference for hybrid-PQ greater than your preference for faster connection setup?  Do you need to factor in the current server load?\r\n\r\nUltimately, I would prefer to decouple the solution to this problem from the hinting stuff as much as possible.  I know that SVCB hints really amplify the risks, but I just don't see this going anywhere other than into RFC 6919 territory.",
+      "createdAt": "2024-03-08T03:04:23Z",
+      "updatedAt": "2024-03-08T04:55:13Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Yeah, I struggled a lot with how to phrase this in a remotely coherent way. I guess, for the client, the main question is when is it safe to actually exercise RFC 8446's allowance to omit your most preferred groups in key shares. Which boils down to whether you believe OpenSSL's existing behavior is:\r\n\r\n1. An undesirable behavior that we account for because it's very common and, prior to key share prediction, there wasn't actually a problem so it'd be bad to introduce one\r\n2. An undesirable behavior we can ignore because it's a security bug and the server operator's responsibility to patch\r\n3. An explicit decision to treat all groups as equipreference, despite the documentation clearly describing otherwise\r\n\r\nAt the time I wrote this spec, I had interpreted it as (1) because (2) seemed a bit harsh, and would require clear consensus that this behavior is wrong. If we believe it's (1), I think we have to believe we need some kind of classification here.\r\n\r\nI didn't give much thought to (3) because the documentation clearly said otherwise. But, on reflection, I'm warming up to that option:\r\n* RFC 8446 already explicitly said \"However, the values MAY be a non-contiguous subset of the \"supported_groups\" extension and MAY omit the most preferred groups\". While it's kind of buried in there (I missed it at first!) and 8446bis's clarification is a much needed improvement, the spec was not *actually* ambiguous\r\n* OpenSSL's position seems to be (3) right now, despite the documentation mismatch.\r\n\r\nSo perhaps the thing to do is I'll go write OpenSSL's documentation fix for them, and then yeah take interpretation (3). Maybe include some very loose text here to the effect of \"clients, be aware that varying your key share set may allow attacker influence over the selected group... however, any influence will be within the confines of the server's selection policies. It is up to the server to not implement a stupid policy.\"",
+          "createdAt": "2024-03-08T04:14:31Z",
+          "updatedAt": "2024-03-08T04:55:13Z"
+        }
+      ]
     }
   ],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 3,
+      "id": "PR_kwDOKfBef85pBvZ_",
+      "title": "Range of valid values",
+      "url": "https://github.com/davidben/tls-key-share-prediction/pull/3",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I know that 0..65536 is typically inclusive at the start and exclusive at the end in a lot of contexts, but it's best to spell things out.",
+      "createdAt": "2024-03-07T23:24:23Z",
+      "updatedAt": "2024-03-08T01:50:59Z",
+      "baseRepository": "davidben/tls-key-share-prediction",
+      "baseRefName": "main",
+      "baseRefOid": "310fa7bbddd1fe0c81e3a6865a59880efc901b33",
+      "headRepository": "martinthomson/tls-key-share-prediction",
+      "headRefName": "patch-1",
+      "headRefOid": "f5272570d12f2aaa74aba2681d8eb2a87b417861",
+      "closedAt": "2024-03-08T01:50:58Z",
+      "mergedAt": "2024-03-08T01:50:58Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "393e39396a9da484a9380d07500e17095cc79b48"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Oh thanks! Yeah, I'm pretty sure that was just a typo on my part. :-)",
+          "createdAt": "2024-03-08T01:47:10Z",
+          "updatedAt": "2024-03-08T01:47:10Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKfBef85yqk7n",
+          "commit": {
+            "abbreviatedOid": "f527257"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-07T23:24:49Z",
+          "updatedAt": "2024-03-07T23:24:50Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "I would also trim the last sentence.  Special parsing rules are special and therefore should be avoided.",
+              "createdAt": "2024-03-07T23:24:50Z",
+              "updatedAt": "2024-03-07T23:24:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKfBef85yrDBx",
+          "commit": {
+            "abbreviatedOid": "f527257"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-08T01:50:32Z",
+          "updatedAt": "2024-03-08T01:50:32Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "I don't feel very strongly either way. I guess it's a question of how parsers for these things tend to look. I just borrowed this phrasing (except then I picked up a typo) from https://www.rfc-editor.org/rfc/rfc9460.html#section-7.2-2, so I inferred banning escapes was preferable. \ud83e\udd37 \r\n\r\nHappy to do whatever DNS people like. I have no experience parsing these presentation values and likely never will.\r\n\r\n(Figure I'll merge this PR as-is and we can sort that out separately.)",
+              "createdAt": "2024-03-08T01:50:32Z",
+              "updatedAt": "2024-03-08T01:50:32Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKfBef85yrDFM",
+          "commit": {
+            "abbreviatedOid": "f527257"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-03-08T01:50:51Z",
+          "updatedAt": "2024-03-08T01:50:51Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
 }
