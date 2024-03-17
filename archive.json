@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-14T01:07:48.420722+00:00",
+  "timestamp": "2024-03-17T01:12:23.455267+00:00",
   "repo": "davidben/tls-key-share-prediction",
   "labels": [
     {
@@ -263,6 +263,47 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 6,
+      "id": "PR_kwDOKfBef85pqxQn",
+      "title": "Decide servers should have accounted for this already",
+      "url": "https://github.com/davidben/tls-key-share-prediction/pull/6",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "This cuts the document by about half.\r\n\r\nIn the original version of this document, I assumed that attacker control over the key_share list was a novel scenario that servers were not expected to previously account for. After all, we went through quite a lot of trouble to capture both ClientHellos in the handshake transcript.\r\n\r\nOn reflection after MT filed issue #5, I think that was too timid of a position. Although rfc8446bis improves the wording, RFC 8446 *already* was quite clear that the key_share list may be an arbitrary subset of the supported_groups list and doesn't reflect the full preferences. So we can reasonably claim that any key_share-first server either:\r\n\r\n* has considered this and believes the groups are comparable in preference, or\r\n\r\n* did not understand the protocol and failed to implement their desired policy correctly.\r\n\r\nThe first is a perfectly valid choice. It's not a good choice between ECDH and post-quantum, but it's perfectly defensible between post-quantum options or between two ECDH curves. The second is a server bug and the server's responsibility to fix, even if it is exacerbated by new client behavior.\r\n\r\nIf we believe that, there is nothing wrong with a client predicting `key_share` based on any heuristic, be it DNS, random probes to avoid compat risks of large ClientHellos, whatever you negotiated previously, the phase of the moon, racing two connections, or a popularity contest. So now all the stuff around prediction-safe vs prediction-unsafe groups is cut, and we just include a discussion in Security Considerations that this was okay.",
+      "createdAt": "2024-03-14T18:47:41Z",
+      "updatedAt": "2024-03-14T18:53:08Z",
+      "baseRepository": "davidben/tls-key-share-prediction",
+      "baseRefName": "main",
+      "baseRefOid": "3d48a82a0a4a745fb3eab6f7ca40349382227362",
+      "headRepository": "davidben/tls-key-share-prediction",
+      "headRefName": "just-decide-its-okay",
+      "headRefOid": "421f1a8a2375d495de7a5ee9c8b4a8d8b333ae36",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "@martinthomson and @ekr, curious how you feel about this.",
+          "createdAt": "2024-03-14T18:48:04Z",
+          "updatedAt": "2024-03-14T18:48:04Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Since PR guts the whole document, this link is probably easier to read than the diff:\r\nhttps://davidben.github.io/tls-key-share-prediction/just-decide-its-okay/draft-davidben-tls-key-share-prediction.html",
+          "createdAt": "2024-03-14T18:49:52Z",
+          "updatedAt": "2024-03-14T18:49:52Z"
+        }
+      ],
+      "reviews": []
     }
   ]
 }
