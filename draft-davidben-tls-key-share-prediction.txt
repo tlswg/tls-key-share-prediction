@@ -4,9 +4,9 @@
 
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                Google LLC
-Updates: 8446 (if approved)                                 8 March 2024
+Updates: 8446 (if approved)                                18 March 2024
 Intended status: Standards Track                                        
-Expires: 9 September 2024
+Expires: 19 September 2024
 
 
                         TLS Key Share Prediction
@@ -14,11 +14,9 @@ Expires: 9 September 2024
 
 Abstract
 
-   This document clarifies an ambiguity in the TLS 1.3 key share
-   selection, to avoid a downgrade when server assumptions do not match
-   client behavior.  It additionally defines a mechanism for servers to
-   communicate key share preferences in DNS.  Clients may use this
-   information to reduce TLS handshake round-trips.
+   This document defines a mechanism for servers to communicate key
+   share preferences in DNS.  Clients may use this information to reduce
+   TLS handshake round-trips.
 
 About This Document
 
@@ -53,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 September 2024.
+   This Internet-Draft will expire on 19 September 2024.
 
 Copyright Notice
 
@@ -73,75 +71,50 @@ Table of Contents
 
    1.  Introduction
    2.  Conventions and Definitions
-   3.  Predictions vs Preferences in TLS
-     3.1.  Downgrades
-       3.1.1.  Uncommon Groups
-       3.1.2.  Predictions
-       3.1.3.  Compatibility
-     3.2.  Server Behavior
-     3.3.  Prediction-Safe Named Groups
-     3.4.  Client Behavior
-   4.  DNS Service Parameter
-     4.1.  Format
-     4.2.  Configuring Services
-     4.3.  Client Behavior
-     4.4.  Misprediction
-   5.  Security Considerations
-   6.  IANA Considerations
-     6.1.  Updates to the TLS Supported Groups Registry
-     6.2.  Updates to the Service Parameter Keys Registry
-   7.  Normative References
+   3.  DNS Service Parameter
+     3.1.  Format
+     3.2.  Configuring Services
+     3.3.  Client Behavior
+     3.4.  Misprediction
+   4.  Security Considerations
+   5.  IANA Considerations
+   6.  Normative References
    Acknowledgments
    Author's Address
 
 1.  Introduction
 
-   Most TLS [RFC8446] parameters are negotiated as follows: The client
-   sends a list of supported options in preference order.  Then, the
-   server evaluates this against its own preferences to make a
-   selection.  The aim is to arrive at the best common option, without
-   permitting attackers to downgrade to a weaker one.  Newer clients and
-   servers often support legacy options for compatibility with older
-   peers.  Downgrade-protected parameter selection reduces the security
-   risk of those legacy options when both sides of a connection are
-   newer.
+   Named groups in TLS 1.3 [RFC8446] are negotiated with two lists in
+   the ClientHello: The client sends its full preferences in the
+   supported_groups extension, but also generates key shares for a
+   subset in the key_share extension.  Named groups in this subset may
+   be used in one, while named groups outside the subset requires a
+   HelloRetryRequest and two round trips.  The additional round trip is
+   undesirable for performance, but unused key shares consume network
+   and computational resources, so clients often do not generate key
+   shares for all groups.
 
-   Named groups in TLS 1.3 instead use two client lists.  The client
-   sends its full preferences in the supported_groups extension, but
-   also generates key shares for a subset in the key_share extension.
-   If the server selects a named group in this subset, the handshake may
-   complete in one round trip.  Otherwise, the handshake requires a
-   HelloRetryRequest and two round trips.  Unused key shares consume
-   network and computational resources, so clients only predict a subset
-   of supported groups, balancing round-trip reduction against other
-   concerns.  This adds another dimension to server group selection.
+   Post-quantum key encapsulation methods (KEMs) have large keys and
+   ciphertexts, so network costs are particularly pronounced.  As a TLS
+   ecosystem transitions from one post-quantum KEM to another, it is
+   challenging to pick key shares without prior knowledge of the
+   server's policies:
 
-   [RFC8446] is ambiguous on the semantics of the key_share subset.
-   Some existing servers assume it reflects client preferences,
-   selecting named groups in key_share above all others.  However, the
-   concerns above mean clients may need to predict based on other
-   factors.  Where these interpretations conflict, the selection may be
-   downgraded, potentially even under attacker influence.
+   1.  Predicting both post-quantum KEMs consumes excessive bandwidth on
+       the unused option.
 
-   This document resolves the ambiguity in three ways:
+   2.  Predicting the old post-quantum KEM adds a round-trip cost to
+       newer servers.  Servers will be unlikely to transition as a
+       result.
 
-   *  It updates server behavior to clarify that key shares may not
-      reflect client preferences
+   3.  Predicting the new post-quantum KEM adds a round-trip cost to
+       older servers.  Particularly early in the transition, when most
+       servers do not implement the new KEM, this may significantly
+       regress performance.
 
-   *  For existing named groups, it recommends clients to predict key
-      shares that reflect their preferences, for compatibility with
-      servers that predate this document
-
-   *  For future named groups, it mandates the updated server behavior,
-      so that clients may predict key shares more flexibly
-
-   It is expected that all post-quantum key encapsulation methods (KEMs)
-   will fall in the last category.  Post-quantum KEMs have large keys
-   and ciphertexts, so bandwidth concerns are particularly pronounced.
-
-   This document additionally defines a method for servers to declare
-   their named group preferences in DNS, using SVCB or HTTPS resource
-   records [RFC9460].  This allows the client to predict key shares more
+   This document defines a method for servers to declare their named
+   group preferences in DNS, using SVCB or HTTPS resource records
+   [RFC9460].  This allows the client to predict key shares more
    accurately.
 
 2.  Conventions and Definitions
@@ -152,165 +125,15 @@ Table of Contents
    14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-3.  Predictions vs Preferences in TLS
+3.  DNS Service Parameter
 
-3.1.  Downgrades
-
-   Some existing TLS 1.3 servers implement the following named group
-   selection algorithm:
-
-   1.  Select a common named group in key_share.  If found, select it
-       and send ServerHello.
-
-   2.  Otherwise, select a common named group in supported_groups.  If
-       found, select it and send HelloRetryRequest.
-
-   3.  Otherwise, terminate the handshake with a handshake_failure
-       alert.
-
-   While this algorithm avoids HelloRetryRequest whenever possible, it
-   implicitly assumes the client prefers the values sent in key_share,
-   and that the server has no preferences between any groups.  If these
-   assumptions do not hold, the server's selection may be downgraded.
-
-   The following sections describe example downgrade scenarios with this
-   algorithm. postquantum1 and postquantum2 refer to future post-quantum
-   named groups, which both client and server prefer over x25519.
-
-3.1.1.  Uncommon Groups
-
-   Consider a client which implements, in preference order,
-   postquantum2, postquantum1, and x25519.  Sending keys for both
-   postquantum2 and postquantum1 is expensive, so the client only
-   predicts one of them. postquantum2 is preferred (e.g. more efficient
-   or more commonly deployed), and older x25519-only servers still
-   exist, so the client predicts postquantum2, x25519 in key_share.
-
-   If the server predates postquantum2 and only implements postquantum1
-   and x25519, it will select x25519, although postquantum1 is available
-   in supported_groups.
-
-3.1.2.  Predictions
-
-   The client may predict key shares based on prior knowledge about the
-   server, such as a DNS hint (see Section 4).  For example, during a
-   transition from postquantum1 to postquantum2, both options will be
-   available in the ecosystem.  The client may use a DNS hint to avoid
-   needing HelloRetryRequest with both existing and upgraded servers.
-
-   If the client's prior knowledge is outdated or under attacker
-   influence, this can lead to a downgrade.  Suppose the server
-   implements postquantum1 and x25519, but the client believed it only
-   implemented x25519.  The client may then predict x25519 in key_share,
-   leading the server to select x25519 over the preferred postquantum1.
-
-3.1.3.  Compatibility
-
-   Software bugs in existing TLS servers may prevent them from
-   processing larger ClientHellos.  During an early rollout of post-
-   quantum KEMs, a client may prefer postquantum1, but sometimes only
-   predict x25519 to reduce compatibility risk, expecting that newer
-   servers can still select it with HelloRetryRequest.
-
-   However, a server implementing the above algorithm would instead
-   select x25519 over the preferred postquantum1.
-
-3.2.  Server Behavior
-
-   TLS 1.3 servers implementing this document MUST NOT assume the
-   client's key_share extension reflects client preferences.  Instead,
-   servers SHOULD select the best common named group based on
-   supported_groups, without reference to key_share.  The server then
-   looks for the selected named group in key_share to decide whether to
-   send HelloRetryRequest or ServerHello.
-
-   If choosing between two named groups which the server equally
-   prefers, and for which the server is willing to ignore the client's
-   supported_groups preference order, the server MAY use presence in the
-   client's key_share extension to select one which will avoid
-   HelloRetryRequest.  However, attackers may then influence which of
-   the two is chosen.
-
-   Note the algorithm in Section 3.1 is permitted if the above applies
-   to all of a server's supported groups.  However, this is unlikely to
-   apply if the server implements a combination of post-quantum and
-   legacy named groups, or if the server software's configuration
-   specifies a preference order.
-
-3.3.  Prediction-Safe Named Groups
-
-   Although Section 3.2 defines new rules for TLS 1.3 servers, TLS 1.3
-   has already been deployed.  Clients that assume a server implements
-   the new rules may introduce a downgrade attack on a pre-existing
-   server.  To avoid this, this document uses named group codepoints to
-   distinguish the old and new behavior.
-
-   A named group is considered prediction-safe if the value in the
-   "Prediction-Safe" column of the registry (see Section 6) is "Y".
-   Otherwise, it is considered prediction-unsafe.  Any TLS server which
-   implements a prediction-safe named group MUST follow the guidelines
-   in Section 3.2.  To be a prediction-safe named group, the defining
-   specification MUST cite this document and include such a requirement.
-   For example:
-
-      TLS servers which support this named group MUST select parameters
-      as described in Section 3.2 of [this-RFC].
-
-3.4.  Client Behavior
-
-   When sending the initial ClientHello, clients SHOULD ensure the
-   prediction-unsafe groups in the key_share extension are consistent
-   with its preferences.  This is determined by the following procedure:
-
-   1.  Let key_share_pred_unsafe be the list of prediction-unsafe named
-       groups in the key_share extension
-
-   2.  Let supported_groups_pred_unsafe be the list of prediction-unsafe
-       named groups in the supported_groups extension
-
-   3.  The key_share extension is consistent if and only if
-       key_share_pred_unsafe is a prefix of supported_groups_pred_unsafe
-
-   This procedure ignores all prediction-safe named groups.  Clients MAY
-   freely vary whether a prediction-safe named group is included,
-   including using untrusted signals.
-
-   For example, suppose safe1 and safe2 are prediction-safe, while
-   unsafe1 and unsafe2 are prediction-unsafe.  If the client's
-   supported_groups extension contains, in order, safe1, unsafe1, safe2,
-   unsafe2, the following key_share predictions would meet this
-   criteria:
-
-   *  No key shares
-
-   *  safe1, safe2
-
-   *  safe2
-
-   *  unsafe1, unsafe2
-
-   *  unsafe1, safe2
-
-   The following would not:
-
-   *  unsafe2
-
-   *  safe1, unsafe2
-
-   If the client has trusted, prior knowledge that the server implements
-   a selection algorithm consistent with Section 3.2, it MAY disregard
-   the above and freely vary both prediction-safe and prediction-unsafe
-   groups.
-
-4.  DNS Service Parameter
-
-   This section defines the tls-supported-groups SvcParamKey [RFC9460],
+   This document defines the tls-supported-groups SvcParamKey [RFC9460],
    which specifies the endpoint's TLS supported group preferences, as a
    sequence of TLS NamedGroup codepoints in order of decreasing
    preference.  This allows clients connecting to the endpoint to reduce
    the likelihood of needing a HelloRetryRequest.
 
-4.1.  Format
+3.1.  Format
 
    The presentation value of the SvcParamValue is a comma-separated list
    (Appendix A.1 of [RFC9460]) of decimal integers between 0 and 65535
@@ -320,7 +143,7 @@ Table of Contents
    The wire format of the SvcParamValue is a sequence of 2-octet numeric
    values in network byte order.  An empty list of values is invalid.
 
-4.2.  Configuring Services
+3.2.  Configuring Services
 
    Services SHOULD include supported TLS named groups, in order of
    decreasing preference in the tls-supported-groups parameter of their
@@ -328,29 +151,24 @@ Table of Contents
    SHOULD update the DNS record to match.  Services MAY include GREASE
    values [RFC8701] in this list.
 
-   A service MUST NOT configure this service parameter if any of the
-   corresponding TLS servers do not implement the TLS server guidance in
-   Section 3.2.
-
-4.3.  Client Behavior
+3.3.  Client Behavior
 
    When connecting to a service endpoint whose HTTPS or SVCB record
    contains the tls-supported-groups parameter, the client evaluates the
    server preferences against its own to predict which named group will
-   be chosen.  If this result is a prediction-safe named group (see
-   Section 3.3), the client sends a key_share extension containing just
-   that named group in the initial ClientHello.  Restricting to
-   prediction-safe groups ensures the client's behavior meets the
-   requirements in Section 3.4.
+   be chosen.  When evaluating the server preferences, the client MUST
+   ignore any codepoints that it does not support or recognize.  If
+   there is a named group in common, the client MAY send a key_share
+   extension containing just that named group in the initial
+   ClientHello.  To avoid downgrade attacks, the client MUST continue to
+   send its full preferences in the supported_groups extension.  See
+   Section 4 for additional discussion on downgrades.
 
-   When evaluating the server preferences, the client MUST ignore any
-   codepoints that it does not support or recognize.
-
-4.4.  Misprediction
+3.4.  Misprediction
 
    Although this service parameter is intended to reduce key share
-   mispredictions, mispredictions may still occur.  For example,
-   HelloRetryRequest may be required in the following cases:
+   mispredictions, mispredictions may still occur in some scenarios.
+   For example:
 
    *  The client has fetched a stale HTTPS or SVCB record that no longer
       reflects the server preferences
@@ -365,60 +183,57 @@ Table of Contents
       such that client's evaluation of the service parameter did not
       match the server's final selection
 
-   *  The server preferred a prediction-unsafe named group for this
-      client, so the client was unable to safely act on the service
-      parameter
-
    Clients and servers MUST correctly handle mispredictions by
-   responding to or sending HelloRetryRequest, respectively.
+   responding to and sending HelloRetryRequest, respectively.
 
-5.  Security Considerations
+4.  Security Considerations
 
-   This document updates TLS server behavior and introduces a notion of
-   prediction-safe named groups to avoid the downgrades in Section 3.1,
-   for both new and existing TLS 1.3 implementations:
+   This document introduces a mechanism for clients to vary the
+   key_share extension based on DNS.  DNS responses are unauthenticated
+   in many deployments, so this can permit attacker influence over the
+   client's predicted named groups.  That, in turn, can influence the
+   named group selected by the TLS server, as TLS's downgrade
+   protections only extend to the ClientHello itself.  However, the
+   client continues to send its full preferences in supported_groups, so
+   this influence is limited by the server's named group selection
+   policy:
 
-   *  New servers that implement Section 3.2 have selection algorithms
-      that permit arbitrary client key_share prediction criteria, even
-      under attacker influence.
+   Servers which select purely based on preference orders will first
+   select a named group on supported_groups, and then consider key_share
+   only to send HelloRetryRequest or ServerHello.  When connecting to
+   such servers, attackers cannot influence the selection with this
+   mechanism.
 
-   *  Existing servers are assumed to only implement prediction-unsafe
-      named groups.  Section 3.4 ensures that, for all named groups they
-      implement, the client's predicted list will be compatible with
-      possible server assumptions.
+   However, some servers prioritize round-trip times over preference
+   orders.  That is, when choosing between a named group in key_share
+   and a more preferable (e.g. more secure) named group not in
+   key_share, these servers will select the less preferable one in
+   key_share.  In this case, an attacker may be able to influence the
+   selection by forging an HTTPS or SVCB record.  Per Section 4.2.8 of
+   [RFC8446], the client's key_share extension does not reflect its full
+   preference list in supported_groups.  Thus, this server behavior is
+   only appropriate when the two options are of comparable preference,
+   such that round trip concerns dominate.  In particular, it is NOT
+   RECOMMENDED when choosing between post-quantum and classical named
+   groups.
 
-   If a TLS server implements a prediction-safe named group but does not
-   follow the guidelines in Section 3.2, downgrades are possible.  Thus
-   Section 3.3 requires all prediction-safe named groups to include text
-   referencing this document.
+   As these semantics were already prescribed in [RFC8446], it is safe
+   for clients to admit attacker control over the set of named groups
+   preferred in key_share, provided supported_groups always reflects the
+   true client preference.  Servers are expected to evaluate the
+   combination of key_share and supported_groups according to the
+   defined semantics and their selection goals.
 
-6.  IANA Considerations
+   To reduce the risk of downgrade attacks with incorrectly deployed
+   servers, clients MAY choose to ignore tls-supported-groups when the
+   result would be to a predict a less preferred group.  For example, a
+   client that implements a combination of post-quantum groups and ECDH
+   groups MAY limit its influence to predicting post-quantum groups.
+   This optimizes transitions between post-quantum groups, where the
+   bandwidth concerns are more pronounced, but means ECDH-only servers
+   cannot take advantage of the mechanism.
 
-6.1.  Updates to the TLS Supported Groups Registry
-
-   This document updates the TLS Supported Groups registry [RFC8422] to
-   add a "Prediction-Safe" column immediately following the
-   "Recommended" column.  The "Prediction-Safe" column is set to a value
-   of "N" for all existing allocations except for X25519Kyber768Draft00
-   and SecP256r1Kyber768Draft00.  Those two values should be set to "Y".
-
-   [[TODO: As of writing, neither of the Kyber768 hybrids above include
-   the necessary text.  But, as Kyber is a large post-quantum KEM, it's
-   desirable for them to be prediction-safe.  If this document is
-   adopted, the respective Kyber drafts can be updated to incorporate
-   the necessary sentence.]]
-
-   This document additional adds the following note to the registry:
-
-      Note: Section 3.3 of [this-RFC] defines the procedure for a group
-      to be considered prediction-safe and thus set the corresponding
-      column to a value of "Y".  All new allocations to this registry
-      are expected to be prediction-safe, unless some interoperability
-      consideration prevents it.  For example, if the new allocation is
-      documenting a pre-existing deployment with the older server
-      behavior, it may be allocated with a value of "N".
-
-6.2.  Updates to the Service Parameter Keys Registry
+5.  IANA Considerations
 
    This document updates the Service Parameter Keys registry [RFC9460]
    with the following entry:
@@ -430,12 +245,12 @@ Table of Contents
    |TBD   | tls-supported-groups | Supported | (this     | IETF       |
    |      |                      | groups in | document) |            |
    |      |                      | TLS       | Section   |            |
-   |      |                      |           | 4.1       |            |
+   |      |                      |           | 3.1       |            |
    +------+----------------------+-----------+-----------+------------+
 
                                  Table 1
 
-7.  Normative References
+6.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -445,12 +260,6 @@ Table of Contents
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
-
-   [RFC8422]  Nir, Y., Josefsson, S., and M. Pegourie-Gonnard, "Elliptic
-              Curve Cryptography (ECC) Cipher Suites for Transport Layer
-              Security (TLS) Versions 1.2 and Earlier", RFC 8422,
-              DOI 10.17487/RFC8422, August 2018,
-              <https://www.rfc-editor.org/rfc/rfc8422>.
 
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
@@ -469,8 +278,8 @@ Table of Contents
 Acknowledgments
 
    The author would like to thank David Adrian, Bob Beck, Sophie
-   Schmieg, and Bas Westerbaan for discussions and review on initial
-   iterations of this document.
+   Schmieg, Martin Thomson, and Bas Westerbaan for discussions and
+   review of this document.
 
 Author's Address
 
