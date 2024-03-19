@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-03-17T01:12:23.455267+00:00",
+  "timestamp": "2024-03-19T01:08:52.946262+00:00",
   "repo": "davidben/tls-key-share-prediction",
   "labels": [
     {
@@ -55,16 +55,24 @@
       "id": "I_kwDOKfBef850P5fk",
       "title": "Rephrase server selection algorithm to select a list from supported_groups",
       "url": "https://github.com/davidben/tls-key-share-prediction/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "@bwesterb had an idea that we should say:\r\n1. Pick a set of equipreference groups from supported_groups\r\n2. Pick among the equipreference groups using key_share\r\n\r\nThat's probably a bit clearer. Filing this so I don't forget.",
       "createdAt": "2023-10-18T17:50:56Z",
-      "updatedAt": "2023-10-18T17:50:56Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2024-03-18T05:45:49Z",
+      "closedAt": "2024-03-18T05:45:49Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "This is moot with the simpler version.",
+          "createdAt": "2024-03-18T05:45:42Z",
+          "updatedAt": "2024-03-18T05:45:42Z"
+        }
+      ]
     },
     {
       "number": 2,
@@ -153,15 +161,15 @@
       "id": "I_kwDOKfBef86BprtO",
       "title": "\"you say MUST, but do you really mean it?\"",
       "url": "https://github.com/davidben/tls-key-share-prediction/issues/5",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "It took me a while to understand how the safe/unsafe distinction and the server behaviour were intended to interact.\r\n\r\nThe mechanism seems a bit convoluted, but it boils down to a client needing to include key shares for its most-preferred groups, unless it can be confident that the server will do the right thing when a more-preferred group lacks a share (which is what this draft attempts to mandate).\r\n\r\nI would prefer not to include this mandate.  There are lots of reasons that this \"MUST\" might be ignored.\r\n\r\nMostly, it's just that an extra round trip is a giant pain. If you have a non-PQ share, but might prefer to use a hybrid-PQ KEM, you are faced with a choice: is your preference for hybrid-PQ greater than your preference for faster connection setup?  Do you need to factor in the current server load?\r\n\r\nUltimately, I would prefer to decouple the solution to this problem from the hinting stuff as much as possible.  I know that SVCB hints really amplify the risks, but I just don't see this going anywhere other than into RFC 6919 territory.",
       "createdAt": "2024-03-08T03:04:23Z",
-      "updatedAt": "2024-03-08T04:55:13Z",
-      "closedAt": null,
+      "updatedAt": "2024-03-18T05:45:16Z",
+      "closedAt": "2024-03-18T05:45:16Z",
       "comments": [
         {
           "author": "davidben",
@@ -169,6 +177,13 @@
           "body": "Yeah, I struggled a lot with how to phrase this in a remotely coherent way. I guess, for the client, the main question is when is it safe to actually exercise RFC 8446's allowance to omit your most preferred groups in key shares. Which boils down to whether you believe OpenSSL's existing behavior is:\r\n\r\n1. An undesirable behavior that we account for because it's very common and, prior to key share prediction, there wasn't actually a problem so it'd be bad to introduce one\r\n2. An undesirable behavior we can ignore because it's a security bug and the server operator's responsibility to patch\r\n3. An explicit decision to treat all groups as equipreference, despite the documentation clearly describing otherwise\r\n\r\nAt the time I wrote this spec, I had interpreted it as (1) because (2) seemed a bit harsh, and would require clear consensus that this behavior is wrong. If we believe it's (1), I think we have to believe we need some kind of classification here.\r\n\r\nI didn't give much thought to (3) because the documentation clearly said otherwise. But, on reflection, I'm warming up to that option:\r\n* RFC 8446 already explicitly said \"However, the values MAY be a non-contiguous subset of the \"supported_groups\" extension and MAY omit the most preferred groups\". While it's kind of buried in there (I missed it at first!) and 8446bis's clarification is a much needed improvement, the spec was not *actually* ambiguous\r\n* OpenSSL's position seems to be (3) right now, despite the documentation mismatch.\r\n\r\nSo perhaps the thing to do is I'll go write OpenSSL's documentation fix for them, and then yeah take interpretation (3). Maybe include some very loose text here to the effect of \"clients, be aware that varying your key share set may allow attacker influence over the selected group... however, any influence will be within the confines of the server's selection policies. It is up to the server to not implement a stupid policy.\"",
           "createdAt": "2024-03-08T04:14:31Z",
           "updatedAt": "2024-03-08T04:55:13Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "New, much simpler version of draft done.",
+          "createdAt": "2024-03-18T05:45:16Z",
+          "updatedAt": "2024-03-18T05:45:16Z"
         }
       ]
     }
@@ -269,24 +284,26 @@
       "id": "PR_kwDOKfBef85pqxQn",
       "title": "Decide servers should have accounted for this already",
       "url": "https://github.com/davidben/tls-key-share-prediction/pull/6",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "This cuts the document by about half.\r\n\r\nIn the original version of this document, I assumed that attacker control over the key_share list was a novel scenario that servers were not expected to previously account for. After all, we went through quite a lot of trouble to capture both ClientHellos in the handshake transcript.\r\n\r\nOn reflection after MT filed issue #5, I think that was too timid of a position. Although rfc8446bis improves the wording, RFC 8446 *already* was quite clear that the key_share list may be an arbitrary subset of the supported_groups list and doesn't reflect the full preferences. So we can reasonably claim that any key_share-first server either:\r\n\r\n* has considered this and believes the groups are comparable in preference, or\r\n\r\n* did not understand the protocol and failed to implement their desired policy correctly.\r\n\r\nThe first is a perfectly valid choice. It's not a good choice between ECDH and post-quantum, but it's perfectly defensible between post-quantum options or between two ECDH curves. The second is a server bug and the server's responsibility to fix, even if it is exacerbated by new client behavior.\r\n\r\nIf we believe that, there is nothing wrong with a client predicting `key_share` based on any heuristic, be it DNS, random probes to avoid compat risks of large ClientHellos, whatever you negotiated previously, the phase of the moon, racing two connections, or a popularity contest. So now all the stuff around prediction-safe vs prediction-unsafe groups is cut, and we just include a discussion in Security Considerations that this was okay.",
       "createdAt": "2024-03-14T18:47:41Z",
-      "updatedAt": "2024-03-14T18:53:08Z",
+      "updatedAt": "2024-03-18T02:52:45Z",
       "baseRepository": "davidben/tls-key-share-prediction",
       "baseRefName": "main",
       "baseRefOid": "3d48a82a0a4a745fb3eab6f7ca40349382227362",
       "headRepository": "davidben/tls-key-share-prediction",
       "headRefName": "just-decide-its-okay",
       "headRefOid": "421f1a8a2375d495de7a5ee9c8b4a8d8b333ae36",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-03-18T02:52:41Z",
+      "mergedAt": "2024-03-18T02:52:40Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "d3852e8127a3ae7168847c50c8a1908540c49153"
+      },
       "comments": [
         {
           "author": "davidben",
