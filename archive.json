@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-05-05T01:16:20.985428+00:00",
+  "timestamp": "2024-05-07T01:12:52.268630+00:00",
   "repo": "davidben/tls-key-share-prediction",
   "labels": [
     {
@@ -186,6 +186,38 @@
           "updatedAt": "2024-03-18T05:45:16Z"
         }
       ]
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOKfBef86H4tYP",
+      "title": "Repeated/duplicate values",
+      "url": "https://github.com/davidben/tls-key-share-prediction/issues/7",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "If the format includes duplicates, is that an error?",
+      "createdAt": "2024-05-05T23:29:26Z",
+      "updatedAt": "2024-05-05T23:29:26Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOKfBef86H4tdb",
+      "title": "Example",
+      "url": "https://github.com/davidben/tls-key-share-prediction/issues/8",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "DNS RFCs always include the presentation form of something.  It's almost pointless here, but it might solidify things more.",
+      "createdAt": "2024-05-05T23:30:30Z",
+      "updatedAt": "2024-05-05T23:30:30Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
