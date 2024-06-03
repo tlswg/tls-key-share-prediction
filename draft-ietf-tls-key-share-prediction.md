@@ -17,8 +17,8 @@ venue:
   type: "Working Group"
   mail: "tls@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/tls/"
-  github: "davidben/tls-key-share-prediction"
-  latest: "https://davidben.github.io/tls-key-share-prediction/draft-davidben-tls-key-share-prediction.html"
+  github: "tlswg/tls-key-share-prediction"
+  latest: "https://tlswg.github.io/tls-key-share-prediction/draft-ietf-tls-key-share-prediction.html"
 
 author:
  -
