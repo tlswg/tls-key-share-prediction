@@ -4,13 +4,13 @@
 
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                Google LLC
-Updates: 8446 (if approved)                                18 March 2024
+Updates: 8446 (if approved)                                  3 June 2024
 Intended status: Standards Track                                        
-Expires: 19 September 2024
+Expires: 5 December 2024
 
 
                         TLS Key Share Prediction
-             draft-davidben-tls-key-share-prediction-latest
+               draft-ietf-tls-key-share-prediction-latest
 
 Abstract
 
@@ -23,10 +23,10 @@ About This Document
    This note is to be removed before publishing as an RFC.
 
    The latest revision of this draft can be found at
-   https://davidben.github.io/tls-key-share-prediction/draft-davidben-
-   tls-key-share-prediction.html.  Status information for this document
-   may be found at https://datatracker.ietf.org/doc/draft-davidben-tls-
-   key-share-prediction/.
+   https://tlswg.github.io/tls-key-share-prediction/draft-ietf-tls-key-
+   share-prediction.html.  Status information for this document may be
+   found at https://datatracker.ietf.org/doc/draft-ietf-tls-key-share-
+   prediction/.
 
    Discussion of this document takes place on the Transport Layer
    Security Working Group mailing list (mailto:tls@ietf.org), which is
@@ -34,7 +34,7 @@ About This Document
    at https://www.ietf.org/mailman/listinfo/tls/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/davidben/tls-key-share-prediction.
+   https://github.com/tlswg/tls-key-share-prediction.
 
 Status of This Memo
 
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 September 2024.
+   This Internet-Draft will expire on 5 December 2024.
 
 Copyright Notice
 
