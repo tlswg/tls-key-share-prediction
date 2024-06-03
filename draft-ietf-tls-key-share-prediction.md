@@ -1,6 +1,6 @@
 ---
 title: TLS Key Share Prediction
-docname: draft-davidben-tls-key-share-prediction-latest
+docname: draft-ietf-tls-key-share-prediction-latest
 category: std
 
 updates: 8446
