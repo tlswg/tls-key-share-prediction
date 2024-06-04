@@ -1,7 +1,7 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-02T01:19:52.706763+00:00",
-  "repo": "davidben/tls-key-share-prediction",
+  "timestamp": "2024-06-04T01:16:17.129563+00:00",
+  "repo": "tlswg/tls-key-share-prediction",
   "labels": [
     {
       "name": "bug",
@@ -54,10 +54,10 @@
       "number": 1,
       "id": "I_kwDOKfBef850P5fk",
       "title": "Rephrase server selection algorithm to select a list from supported_groups",
-      "url": "https://github.com/davidben/tls-key-share-prediction/issues/1",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/issues/1",
       "state": "CLOSED",
       "author": "davidben",
-      "authorAssociation": "OWNER",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "@bwesterb had an idea that we should say:\r\n1. Pick a set of equipreference groups from supported_groups\r\n2. Pick among the equipreference groups using key_share\r\n\r\nThat's probably a bit clearer. Filing this so I don't forget.",
@@ -67,7 +67,7 @@
       "comments": [
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "This is moot with the simpler version.",
           "createdAt": "2024-03-18T05:45:42Z",
           "updatedAt": "2024-03-18T05:45:42Z"
@@ -78,7 +78,7 @@
       "number": 2,
       "id": "I_kwDOKfBef852lqx7",
       "title": "As an ECH extension?",
-      "url": "https://github.com/davidben/tls-key-share-prediction/issues/2",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/issues/2",
       "state": "CLOSED",
       "author": "sayrer",
       "authorAssociation": "NONE",
@@ -91,7 +91,7 @@
       "comments": [
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "I don't see how this would help. An ECHConfig is no more authentic than anything else you get over DNS, and tying this to ECH doesn't make a whole lot of sense. (If you have multiple ECHConfigs in a single SVCB, they'd all have the same information.)",
           "createdAt": "2023-11-12T21:59:53Z",
           "updatedAt": "2023-11-12T21:59:53Z"
@@ -105,7 +105,7 @@
         },
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "Then the server will handshake with the public name and we'd have much the same problem. Unless the outer ClientHello uses different key shares, but that defeats the point of doing a prediction.\r\n\r\nI also do not think it makes sense to tie this to ECH. The authenticity concerns are already resolved by fixing the negotiation algorithm, which is getting done in 8446bis. And resolving the authenticity concern does not remove the need to fix the negotiation algorithm because there are non-attacker-influenced problems here.",
           "createdAt": "2023-11-14T18:54:05Z",
           "updatedAt": "2023-11-14T18:54:05Z"
@@ -119,7 +119,7 @@
         },
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "ECH is undeployable without that step. It's how the recovery flow works. Removing it would also break our ability to do GREASE.",
           "createdAt": "2023-11-14T19:01:23Z",
           "updatedAt": "2023-11-14T19:01:23Z"
@@ -133,7 +133,7 @@
         },
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "> Oh, I'm not against that flow at all. I think you could get the same effect by sending no retry_configs* and refusing non-ECH ClientHello messages, though.\r\n\r\nIn order to get that far, and authenticate the retry configs, we need the server to handshake with the public name, i.e. use the outer ClientHello.\r\n\r\nIt's also a bit late to be doing such a fundamental change to ECH.\r\n\r\n> Also, I didn't mean to suggest this way /instead/ of what you have now. It just seemed like a better way if the server is going to require ECH.\r\n\r\nI'm not very positive on defining two different redundant mechanisms, when one already fully handles the cases we care about. :-p",
           "createdAt": "2023-11-14T21:15:24Z",
           "updatedAt": "2023-11-14T21:15:24Z"
@@ -144,10 +144,10 @@
       "number": 4,
       "id": "I_kwDOKfBef86Bpdw3",
       "title": "Is it simpler to ban escapes or not in the presentation syntax?",
-      "url": "https://github.com/davidben/tls-key-share-prediction/issues/4",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/issues/4",
       "state": "OPEN",
       "author": "davidben",
-      "authorAssociation": "OWNER",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "The presentation language currently says:\r\n\r\n> The presentation `value` of the SvcParamValue is a comma-separated list ({{Appendix A.1 of I-D.ietf-dnsop-svcb-https}}) of decimal integers between 0 and 65535 (inclusive) in ASCII. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.\r\n\r\n@martinthomson points out it's better to avoid special parsing rules. I think I borrowed this from https://www.rfc-editor.org/rfc/rfc9460.html#section-7.2-2 and inferred that avoiding the special parsing rule was the convention for presentation of 16-bit integers.\r\n\r\nI don't care either way and figure we should do whatever is conventional/convenient here. The behavior of \"port\" is a point towards banning escapes. But if folks think allowing them is better, that's cool too.\r\n\r\nSee https://github.com/davidben/tls-key-share-prediction/pull/3#discussion_r1516975880",
@@ -160,7 +160,7 @@
       "number": 5,
       "id": "I_kwDOKfBef86BprtO",
       "title": "\"you say MUST, but do you really mean it?\"",
-      "url": "https://github.com/davidben/tls-key-share-prediction/issues/5",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/issues/5",
       "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
@@ -173,14 +173,14 @@
       "comments": [
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "Yeah, I struggled a lot with how to phrase this in a remotely coherent way. I guess, for the client, the main question is when is it safe to actually exercise RFC 8446's allowance to omit your most preferred groups in key shares. Which boils down to whether you believe OpenSSL's existing behavior is:\r\n\r\n1. An undesirable behavior that we account for because it's very common and, prior to key share prediction, there wasn't actually a problem so it'd be bad to introduce one\r\n2. An undesirable behavior we can ignore because it's a security bug and the server operator's responsibility to patch\r\n3. An explicit decision to treat all groups as equipreference, despite the documentation clearly describing otherwise\r\n\r\nAt the time I wrote this spec, I had interpreted it as (1) because (2) seemed a bit harsh, and would require clear consensus that this behavior is wrong. If we believe it's (1), I think we have to believe we need some kind of classification here.\r\n\r\nI didn't give much thought to (3) because the documentation clearly said otherwise. But, on reflection, I'm warming up to that option:\r\n* RFC 8446 already explicitly said \"However, the values MAY be a non-contiguous subset of the \"supported_groups\" extension and MAY omit the most preferred groups\". While it's kind of buried in there (I missed it at first!) and 8446bis's clarification is a much needed improvement, the spec was not *actually* ambiguous\r\n* OpenSSL's position seems to be (3) right now, despite the documentation mismatch.\r\n\r\nSo perhaps the thing to do is I'll go write OpenSSL's documentation fix for them, and then yeah take interpretation (3). Maybe include some very loose text here to the effect of \"clients, be aware that varying your key share set may allow attacker influence over the selected group... however, any influence will be within the confines of the server's selection policies. It is up to the server to not implement a stupid policy.\"",
           "createdAt": "2024-03-08T04:14:31Z",
           "updatedAt": "2024-03-08T04:55:13Z"
         },
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "New, much simpler version of draft done.",
           "createdAt": "2024-03-18T05:45:16Z",
           "updatedAt": "2024-03-18T05:45:16Z"
@@ -191,7 +191,7 @@
       "number": 7,
       "id": "I_kwDOKfBef86H4tYP",
       "title": "Repeated/duplicate values",
-      "url": "https://github.com/davidben/tls-key-share-prediction/issues/7",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/issues/7",
       "state": "OPEN",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
@@ -207,7 +207,7 @@
       "number": 8,
       "id": "I_kwDOKfBef86H4tdb",
       "title": "Example",
-      "url": "https://github.com/davidben/tls-key-share-prediction/issues/8",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/issues/8",
       "state": "OPEN",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
@@ -225,7 +225,7 @@
       "number": 3,
       "id": "PR_kwDOKfBef85pBvZ_",
       "title": "Range of valid values",
-      "url": "https://github.com/davidben/tls-key-share-prediction/pull/3",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/pull/3",
       "state": "MERGED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
@@ -234,7 +234,7 @@
       "body": "I know that 0..65536 is typically inclusive at the start and exclusive at the end in a lot of contexts, but it's best to spell things out.",
       "createdAt": "2024-03-07T23:24:23Z",
       "updatedAt": "2024-03-08T01:50:59Z",
-      "baseRepository": "davidben/tls-key-share-prediction",
+      "baseRepository": "tlswg/tls-key-share-prediction",
       "baseRefName": "main",
       "baseRefOid": "310fa7bbddd1fe0c81e3a6865a59880efc901b33",
       "headRepository": "martinthomson/tls-key-share-prediction",
@@ -249,7 +249,7 @@
       "comments": [
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "Oh thanks! Yeah, I'm pretty sure that was just a typo on my part. :-)",
           "createdAt": "2024-03-08T01:47:10Z",
           "updatedAt": "2024-03-08T01:47:10Z"
@@ -282,7 +282,7 @@
             "abbreviatedOid": "f527257"
           },
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2024-03-08T01:50:32Z",
@@ -302,7 +302,7 @@
             "abbreviatedOid": "f527257"
           },
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "state": "APPROVED",
           "body": "",
           "createdAt": "2024-03-08T01:50:51Z",
@@ -315,19 +315,19 @@
       "number": 6,
       "id": "PR_kwDOKfBef85pqxQn",
       "title": "Decide servers should have accounted for this already",
-      "url": "https://github.com/davidben/tls-key-share-prediction/pull/6",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/pull/6",
       "state": "MERGED",
       "author": "davidben",
-      "authorAssociation": "OWNER",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "This cuts the document by about half.\r\n\r\nIn the original version of this document, I assumed that attacker control over the key_share list was a novel scenario that servers were not expected to previously account for. After all, we went through quite a lot of trouble to capture both ClientHellos in the handshake transcript.\r\n\r\nOn reflection after MT filed issue #5, I think that was too timid of a position. Although rfc8446bis improves the wording, RFC 8446 *already* was quite clear that the key_share list may be an arbitrary subset of the supported_groups list and doesn't reflect the full preferences. So we can reasonably claim that any key_share-first server either:\r\n\r\n* has considered this and believes the groups are comparable in preference, or\r\n\r\n* did not understand the protocol and failed to implement their desired policy correctly.\r\n\r\nThe first is a perfectly valid choice. It's not a good choice between ECDH and post-quantum, but it's perfectly defensible between post-quantum options or between two ECDH curves. The second is a server bug and the server's responsibility to fix, even if it is exacerbated by new client behavior.\r\n\r\nIf we believe that, there is nothing wrong with a client predicting `key_share` based on any heuristic, be it DNS, random probes to avoid compat risks of large ClientHellos, whatever you negotiated previously, the phase of the moon, racing two connections, or a popularity contest. So now all the stuff around prediction-safe vs prediction-unsafe groups is cut, and we just include a discussion in Security Considerations that this was okay.",
       "createdAt": "2024-03-14T18:47:41Z",
       "updatedAt": "2024-03-18T02:52:45Z",
-      "baseRepository": "davidben/tls-key-share-prediction",
+      "baseRepository": "tlswg/tls-key-share-prediction",
       "baseRefName": "main",
       "baseRefOid": "3d48a82a0a4a745fb3eab6f7ca40349382227362",
-      "headRepository": "davidben/tls-key-share-prediction",
+      "headRepository": "tlswg/tls-key-share-prediction",
       "headRefName": "just-decide-its-okay",
       "headRefOid": "421f1a8a2375d495de7a5ee9c8b4a8d8b333ae36",
       "closedAt": "2024-03-18T02:52:41Z",
@@ -339,14 +339,14 @@
       "comments": [
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "@martinthomson and @ekr, curious how you feel about this.",
           "createdAt": "2024-03-14T18:48:04Z",
           "updatedAt": "2024-03-14T18:48:04Z"
         },
         {
           "author": "davidben",
-          "authorAssociation": "OWNER",
+          "authorAssociation": "COLLABORATOR",
           "body": "Since PR guts the whole document, this link is probably easier to read than the diff:\r\nhttps://davidben.github.io/tls-key-share-prediction/just-decide-its-okay/draft-davidben-tls-key-share-prediction.html",
           "createdAt": "2024-03-14T18:49:52Z",
           "updatedAt": "2024-03-14T18:49:52Z"
