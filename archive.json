@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-04T01:16:17.129563+00:00",
+  "timestamp": "2024-06-06T01:15:32.434155+00:00",
   "repo": "tlswg/tls-key-share-prediction",
   "labels": [
     {
@@ -350,6 +350,40 @@
           "body": "Since PR guts the whole document, this link is probably easier to read than the diff:\r\nhttps://davidben.github.io/tls-key-share-prediction/just-decide-its-okay/draft-davidben-tls-key-share-prediction.html",
           "createdAt": "2024-03-14T18:49:52Z",
           "updatedAt": "2024-03-14T18:49:52Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 9,
+      "id": "PR_kwDOKfBef85xdoF-",
+      "title": "Add an example encoding, for both presentation and wire formats",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/pull/9",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #8.",
+      "createdAt": "2024-06-04T19:08:13Z",
+      "updatedAt": "2024-06-04T19:08:28Z",
+      "baseRepository": "tlswg/tls-key-share-prediction",
+      "baseRefName": "main",
+      "baseRefOid": "3e9292bc18aba78d16e382e4e4ca23898809d2ad",
+      "headRepository": "tlswg/tls-key-share-prediction",
+      "headRefName": "example",
+      "headRefOid": "763299aba72e6c116fafd33282274a9ce0206b7c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson this look good to you?",
+          "createdAt": "2024-06-04T19:08:27Z",
+          "updatedAt": "2024-06-04T19:08:27Z"
         }
       ],
       "reviews": []
