@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-11T01:17:14.928996+00:00",
+  "timestamp": "2024-06-13T01:16:35.183496+00:00",
   "repo": "tlswg/tls-key-share-prediction",
   "labels": [
     {
@@ -366,7 +366,7 @@
       "labels": [],
       "body": "Fixes #8.",
       "createdAt": "2024-06-04T19:08:13Z",
-      "updatedAt": "2024-06-04T19:08:28Z",
+      "updatedAt": "2024-06-11T03:33:24Z",
       "baseRepository": "tlswg/tls-key-share-prediction",
       "baseRefName": "main",
       "baseRefOid": "3e9292bc18aba78d16e382e4e4ca23898809d2ad",
@@ -386,7 +386,28 @@
           "updatedAt": "2024-06-04T19:08:27Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKfBef859uEp3",
+          "commit": {
+            "abbreviatedOid": "763299a"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "This helps, but I was thinking",
+          "createdAt": "2024-06-11T03:33:20Z",
+          "updatedAt": "2024-06-11T03:33:24Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "This helps, but I was thinking something like this:\r\n\r\n`````suggestion\r\n\r\n``` dns\r\nexample.net.  7200  IN SVCB 3 server.example.net. (\r\n    port=\"8004\" tls-supported-groups=29,23 )\r\n```\r\n`````\r\n\r\n(I'm now uncertain about that syntax though)",
+              "createdAt": "2024-06-11T03:33:20Z",
+              "updatedAt": "2024-06-11T03:34:15Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
