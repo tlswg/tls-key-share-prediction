@@ -70,7 +70,7 @@ The wire format of the SvcParamValue is a sequence of 2-octet numeric values in 
 
 For example, a TLS server which prefers `x25519` (29) and also supports `secp256r1` (23) would a `tls-supported-groups` SvcParamValue containing 29 and 23. The presentation `value` would be "29,23". The wire format of the SvcParamValue would be four octets, represented in hexadecimal as `001d0017`.
 
-The following is an example of the value appear in a complete DNS record in the presentation syntax:
+The following is an example of the value appearing in a complete DNS record in the presentation syntax:
 
 ~~~ dns
 example.net.  7200  IN SVCB 3 server.example.net. (
