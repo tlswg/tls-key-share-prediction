@@ -149,7 +149,7 @@ Table of Contents
    of the SvcParamValue would be four octets, represented in hexadecimal
    as 001d0017.
 
-   The following is an example of the value appear in a complete DNS
+   The following is an example of the value appearing in a complete DNS
    record in the presentation syntax:
 
    example.net.  7200  IN SVCB 3 server.example.net. (
