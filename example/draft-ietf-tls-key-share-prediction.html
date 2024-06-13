@@ -1141,10 +1141,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-format" class="internal xref">Format</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
-                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-client-behavior" class="internal xref">Client Behavior</a></p>
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-configuring-services" class="internal xref">Configuring Services</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
-                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-misprediction" class="internal xref">Misprediction</a></p>
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-client-behavior" class="internal xref">Client Behavior</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-misprediction" class="internal xref">Misprediction</a></p>
 </li>
             </ul>
 </li>
@@ -1213,43 +1216,52 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <p id="section-3.1-1">The presentation <code>value</code> of the SvcParamValue is a comma-separated list (<span><a href="https://rfc-editor.org/rfc/rfc9460#appendix-A.1" class="relref">Appendix A.1</a> of [<a href="#RFC9460" class="cite xref">RFC9460</a>]</span>) of decimal integers between 0 and 65535 (inclusive) in ASCII. Any other <code>value</code> is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.1-3">For example, a TLS server which prefers <code>x25519</code> (29) and also supports <code>secp256r1</code> (23) would a <code>tls-supported-groups</code> SvcParamValue containing 29 and 23. The presentation <code>value</code> would be "29,23". The wire format of the SvcParamValue would be four octets, represented in hexadecimal as <code>001d0017</code>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4"><code>dns
+<p id="section-3.1-4">The following is an example of the value appear in a complete DNS record in the presentation syntax:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<div class="lang-dns sourcecode" id="section-3.1-5">
+<pre>
 example.net.  7200  IN SVCB 3 server.example.net. (
     port="8004" tls-supported-groups=29,23 )
-</code>
-## Configuring Services<a href="#section-3.1-4" class="pilcrow">¶</a></p>
-<p id="section-3.1-5">Services SHOULD include supported TLS named groups, in order of decreasing preference in the <code>tls-supported-groups</code> parameter of their HTTPS or SVCB endpoints. As TLS preferences are updated, services SHOULD update the DNS record to match. Services MAY include GREASE values <span>[<a href="#RFC8701" class="cite xref">RFC8701</a>]</span> in this list.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+</pre><a href="#section-3.1-5" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="configuring-services">
+<section id="section-3.2">
+        <h3 id="name-configuring-services">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-configuring-services" class="section-name selfRef">Configuring Services</a>
+        </h3>
+<p id="section-3.2-1">Services SHOULD include supported TLS named groups, in order of decreasing preference in the <code>tls-supported-groups</code> parameter of their HTTPS or SVCB endpoints. As TLS preferences are updated, services SHOULD update the DNS record to match. Services MAY include GREASE values <span>[<a href="#RFC8701" class="cite xref">RFC8701</a>]</span> in this list.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="client-behavior">
-<section id="section-3.2">
+<section id="section-3.3">
         <h3 id="name-client-behavior">
-<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-client-behavior" class="section-name selfRef">Client Behavior</a>
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-client-behavior" class="section-name selfRef">Client Behavior</a>
         </h3>
-<p id="section-3.2-1">When connecting to a service endpoint whose HTTPS or SVCB record contains the <code>tls-supported-groups</code> parameter, the client evaluates the server preferences against its own to predict which named group will be chosen. When evaluating the server preferences, the client MUST ignore any codepoints that it does not support or recognize. If there is a named group in common, the client MAY send a <code>key_share</code> extension containing just that named group in the initial ClientHello. To avoid downgrade attacks, the client MUST continue to send its full preferences in the <code>supported_groups</code> extension. See <a href="#security-considerations" class="auto internal xref">Section 4</a> for additional discussion on downgrades.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">When connecting to a service endpoint whose HTTPS or SVCB record contains the <code>tls-supported-groups</code> parameter, the client evaluates the server preferences against its own to predict which named group will be chosen. When evaluating the server preferences, the client MUST ignore any codepoints that it does not support or recognize. If there is a named group in common, the client MAY send a <code>key_share</code> extension containing just that named group in the initial ClientHello. To avoid downgrade attacks, the client MUST continue to send its full preferences in the <code>supported_groups</code> extension. See <a href="#security-considerations" class="auto internal xref">Section 4</a> for additional discussion on downgrades.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="misprediction">
-<section id="section-3.3">
+<section id="section-3.4">
         <h3 id="name-misprediction">
-<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-misprediction" class="section-name selfRef">Misprediction</a>
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-misprediction" class="section-name selfRef">Misprediction</a>
         </h3>
-<p id="section-3.3-1">Although this service parameter is intended to reduce key share mispredictions, mispredictions may still occur in some scenarios. For example:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-1">Although this service parameter is intended to reduce key share mispredictions, mispredictions may still occur in some scenarios. For example:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.3-2.1">
-            <p id="section-3.3-2.1.1">The client has fetched a stale HTTPS or SVCB record that no longer reflects the server preferences<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3.4-2.1">
+            <p id="section-3.4-2.1.1">The client has fetched a stale HTTPS or SVCB record that no longer reflects the server preferences<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-3.3-2.2">
-            <p id="section-3.3-2.2.1">The server is in the process of deploying a change to named group preferences, and different server instances temporary evaluate different preferences<a href="#section-3.3-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-3.4-2.2">
+            <p id="section-3.4-2.2.1">The server is in the process of deploying a change to named group preferences, and different server instances temporary evaluate different preferences<a href="#section-3.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-3.3-2.3">
-            <p id="section-3.3-2.3.1">The client was unable to fetch the HTTPS or SVCB record<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-3.4-2.3">
+            <p id="section-3.4-2.3.1">The client was unable to fetch the HTTPS or SVCB record<a href="#section-3.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-3.3-2.4">
-            <p id="section-3.3-2.4.1">The client and server implement incompatible selection algorithms, such that client's evaluation of the service parameter did not match the server's final selection<a href="#section-3.3-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-3.4-2.4">
+            <p id="section-3.4-2.4.1">The client and server implement incompatible selection algorithms, such that client's evaluation of the service parameter did not match the server's final selection<a href="#section-3.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.3-3">Clients and servers MUST correctly handle mispredictions by responding to and sending HelloRetryRequest, respectively.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-3">Clients and servers MUST correctly handle mispredictions by responding to and sending HelloRetryRequest, respectively.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
