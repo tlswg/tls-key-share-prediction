@@ -4,9 +4,9 @@
 
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                Google LLC
-Updates: 8446 (if approved)                                  4 June 2024
+Updates: 8446 (if approved)                                 13 June 2024
 Intended status: Standards Track                                        
-Expires: 6 December 2024
+Expires: 15 December 2024
 
 
                         TLS Key Share Prediction
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 December 2024.
+   This Internet-Draft will expire on 15 December 2024.
 
 Copyright Notice
 
@@ -73,9 +73,8 @@ Table of Contents
    2.  Conventions and Definitions
    3.  DNS Service Parameter
      3.1.  Format
-     3.2.  Configuring Services
-     3.3.  Client Behavior
-     3.4.  Misprediction
+     3.2.  Client Behavior
+     3.3.  Misprediction
    4.  Security Considerations
    5.  IANA Considerations
    6.  Normative References
@@ -149,7 +148,8 @@ Table of Contents
    of the SvcParamValue would be four octets, represented in hexadecimal
    as 001d0017.
 
-3.2.  Configuring Services
+   dns example.net.  7200 IN SVCB 3 server.example.net. ( port="8004"
+   tls-supported-groups=29,23 ) ## Configuring Services
 
    Services SHOULD include supported TLS named groups, in order of
    decreasing preference in the tls-supported-groups parameter of their
@@ -157,7 +157,7 @@ Table of Contents
    SHOULD update the DNS record to match.  Services MAY include GREASE
    values [RFC8701] in this list.
 
-3.3.  Client Behavior
+3.2.  Client Behavior
 
    When connecting to a service endpoint whose HTTPS or SVCB record
    contains the tls-supported-groups parameter, the client evaluates the
@@ -170,7 +170,7 @@ Table of Contents
    send its full preferences in the supported_groups extension.  See
    Section 4 for additional discussion on downgrades.
 
-3.4.  Misprediction
+3.3.  Misprediction
 
    Although this service parameter is intended to reduce key share
    mispredictions, mispredictions may still occur in some scenarios.
