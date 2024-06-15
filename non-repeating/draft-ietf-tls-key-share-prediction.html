@@ -1214,7 +1214,7 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-format" class="section-name selfRef">Format</a>
         </h3>
 <p id="section-3.1-1">The presentation <code>value</code> of the SvcParamValue is a non-empty comma-separated list (<span><a href="https://rfc-editor.org/rfc/rfc9460#appendix-A.1" class="relref">Appendix A.1</a> of [<a href="#RFC9460" class="cite xref">RFC9460</a>]</span>) of decimal integers between 0 and 65535 (inclusive) in ASCII, with no duplicate integers. Any other <code>value</code> is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid, as are duplicates.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid, as is a list containing duplicates.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="configuring-services">
