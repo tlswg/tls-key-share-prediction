@@ -66,7 +66,7 @@ This document defines the `tls-supported-groups` SvcParamKey {{RFC9460}}, which 
 
 The presentation `value` of the SvcParamValue is a non-empty comma-separated list ({{Appendix A.1 of RFC9460}}) of decimal integers between 0 and 65535 (inclusive) in ASCII, with no duplicate integers. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
 
-The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid, as are duplicates.
+The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid, as is a list containing duplicates.
 
 ## Configuring Services
 
