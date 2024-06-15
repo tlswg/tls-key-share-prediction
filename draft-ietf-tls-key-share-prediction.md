@@ -60,13 +60,13 @@ when, and only when, they appear in all capitals, as shown here.
 
 # DNS Service Parameter
 
-This document defines the `tls-supported-groups` SvcParamKey {{RFC9460}}, which specifies the endpoint's TLS supported group preferences, as a sequence of TLS NamedGroup codepoints in order of decreasing preference. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
+This document defines the `tls-supported-groups` SvcParamKey {{RFC9460}}, which specifies the endpoint's TLS supported group preferences, as a non-empty sequence of TLS NamedGroup codepoints in order of decreasing preference, with no duplicates. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
 
 ## Format
 
-The presentation `value` of the SvcParamValue is a comma-separated list ({{Appendix A.1 of RFC9460}}) of decimal integers between 0 and 65535 (inclusive) in ASCII. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
+The presentation `value` of the SvcParamValue is a non-empty comma-separated list ({{Appendix A.1 of RFC9460}}) of decimal integers between 0 and 65535 (inclusive) in ASCII, with no duplicate integers. Any other `value` is a syntax error. To enable simpler parsing, this SvcParam MUST NOT contain escape sequences.
 
-The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid.
+The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid, as are duplicates.
 
 ## Configuring Services
 
