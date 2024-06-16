@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-13T01:16:35.183496+00:00",
+  "timestamp": "2024-06-16T01:22:27.299353+00:00",
   "repo": "tlswg/tls-key-share-prediction",
   "labels": [
     {
@@ -199,9 +199,17 @@
       "labels": [],
       "body": "If the format includes duplicates, is that an error?",
       "createdAt": "2024-05-05T23:29:26Z",
-      "updatedAt": "2024-05-05T23:29:26Z",
+      "updatedAt": "2024-06-15T12:43:50Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I guess it should be a sender error, because that's incoherent. Whether the receiver should be required to check, I dunno. I'll go put together a PR to at least say this on the sender's end. (I'll leave the receiver ambiguous / this issue open.)",
+          "createdAt": "2024-06-15T12:43:49Z",
+          "updatedAt": "2024-06-15T12:43:49Z"
+        }
+      ]
     },
     {
       "number": 8,
@@ -216,6 +224,22 @@
       "body": "DNS RFCs always include the presentation form of something.  It's almost pointless here, but it might solidify things more.",
       "createdAt": "2024-05-05T23:30:30Z",
       "updatedAt": "2024-05-05T23:30:30Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOKfBef86MW9-T",
+      "title": "Is the downgrade protection story sufficient?",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/issues/11",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Filing this to track some feedback from @ekr that occurred during the adoption call, so I don't forget this is an open question:\r\n\r\nhttps://mailarchive.ietf.org/arch/msg/tls/HeSK-HzFWqKY_pIujWBUx6_W4ks/\r\nhttps://mailarchive.ietf.org/arch/msg/tls/Vh_sBURGTPaJnutdn08Q70mhMTY/\r\nhttps://mailarchive.ietf.org/arch/msg/tls/Y4T_9spLsbtcErYLZlvNqtwN5eA/",
+      "createdAt": "2024-06-15T12:41:28Z",
+      "updatedAt": "2024-06-15T12:41:29Z",
       "closedAt": null,
       "comments": []
     }
@@ -366,13 +390,13 @@
       "labels": [],
       "body": "Fixes #8.",
       "createdAt": "2024-06-04T19:08:13Z",
-      "updatedAt": "2024-06-11T03:33:24Z",
+      "updatedAt": "2024-06-13T21:57:51Z",
       "baseRepository": "tlswg/tls-key-share-prediction",
       "baseRefName": "main",
       "baseRefOid": "3e9292bc18aba78d16e382e4e4ca23898809d2ad",
       "headRepository": "tlswg/tls-key-share-prediction",
       "headRefName": "example",
-      "headRefOid": "763299aba72e6c116fafd33282274a9ce0206b7c",
+      "headRefOid": "d79c228395a592bc9adf8a8a90fcd6ec4e134db5",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -384,6 +408,13 @@
           "body": "@martinthomson this look good to you?",
           "createdAt": "2024-06-04T19:08:27Z",
           "updatedAt": "2024-06-04T19:08:27Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Incorporated your example with some minor fixups to the surrounding text.",
+          "createdAt": "2024-06-13T21:57:25Z",
+          "updatedAt": "2024-06-13T21:57:25Z"
         }
       ],
       "reviews": [
@@ -404,6 +435,89 @@
               "body": "This helps, but I was thinking something like this:\r\n\r\n`````suggestion\r\n\r\n``` dns\r\nexample.net.  7200  IN SVCB 3 server.example.net. (\r\n    port=\"8004\" tls-supported-groups=29,23 )\r\n```\r\n`````\r\n\r\n(I'm now uncertain about that syntax though)",
               "createdAt": "2024-06-11T03:33:20Z",
               "updatedAt": "2024-06-11T03:34:15Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "id": "PR_kwDOKfBef85yfmu0",
+      "title": "Delete .editorconfig",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/pull/10",
+      "state": "CLOSED",
+      "author": "erosmary",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-06-14T15:12:00Z",
+      "updatedAt": "2024-06-14T15:12:18Z",
+      "baseRepository": "tlswg/tls-key-share-prediction",
+      "baseRefName": "main",
+      "baseRefOid": "3e9292bc18aba78d16e382e4e4ca23898809d2ad",
+      "headRepository": "erosmary/tls-key-share-prediction",
+      "headRefName": "patch-1",
+      "headRefOid": "2c54d25a127c5e27e327a7f42953c6b154de2f5c",
+      "closedAt": "2024-06-14T15:12:18Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDOKfBef85yj5aB",
+      "title": "The list should not have duplicates",
+      "url": "https://github.com/tlswg/tls-key-share-prediction/pull/12",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Having duplicates in there is pretty incoherent. See issue #7.",
+      "createdAt": "2024-06-15T12:49:28Z",
+      "updatedAt": "2024-06-15T14:18:03Z",
+      "baseRepository": "tlswg/tls-key-share-prediction",
+      "baseRefName": "main",
+      "baseRefOid": "3e9292bc18aba78d16e382e4e4ca23898809d2ad",
+      "headRepository": "tlswg/tls-key-share-prediction",
+      "headRefName": "non-repeating",
+      "headRefOid": "d58fe72f0067be3129e8db60dfbeea66ef3010e7",
+      "closedAt": "2024-06-15T14:18:00Z",
+      "mergedAt": "2024-06-15T14:18:00Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "c11fac92ecee67543bfbc051f8f13dcdb2f57edb"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson ",
+          "createdAt": "2024-06-15T12:49:35Z",
+          "updatedAt": "2024-06-15T12:49:35Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKfBef85-Y0Iy",
+          "commit": {
+            "abbreviatedOid": "380695f"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-06-15T13:06:25Z",
+          "updatedAt": "2024-06-15T13:06:44Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "```suggestion\r\nThe wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid, as is a list containing duplicates.\r\n```",
+              "createdAt": "2024-06-15T13:06:25Z",
+              "updatedAt": "2024-06-15T13:06:44Z"
             }
           ]
         }
