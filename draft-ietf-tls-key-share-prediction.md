@@ -68,6 +68,15 @@ The presentation `value` of the SvcParamValue is a non-empty comma-separated lis
 
 The wire format of the SvcParamValue is a sequence of 2-octet numeric values in network byte order. An empty list of values is invalid, as is a list containing duplicates.
 
+For example, a TLS server which prefers `x25519` (29) and also supports `secp256r1` (23) would a `tls-supported-groups` SvcParamValue containing 29 and 23. The presentation `value` would be "29,23". The wire format of the SvcParamValue would be four octets, represented in hexadecimal as `001d0017`.
+
+The following is an example of the value appearing in a complete DNS record in the presentation syntax:
+
+~~~ dns
+example.net.  7200  IN SVCB 3 server.example.net. (
+    port="8004" tls-supported-groups=29,23 )
+~~~
+
 ## Configuring Services
 
 Services SHOULD include supported TLS named groups, in order of decreasing preference in the `tls-supported-groups` parameter of their HTTPS or SVCB endpoints. As TLS preferences are updated, services SHOULD update the DNS record to match. Services MAY include GREASE values {{!RFC8701}} in this list.
