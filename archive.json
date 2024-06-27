@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-06-25T01:17:08.444940+00:00",
+  "timestamp": "2024-06-27T01:17:11.755792+00:00",
   "repo": "tlswg/tls-key-share-prediction",
   "labels": [
     {
@@ -439,32 +439,6 @@
           ]
         }
       ]
-    },
-    {
-      "number": 10,
-      "id": "PR_kwDOKfBef85yfmu0",
-      "title": "Delete .editorconfig",
-      "url": "https://github.com/tlswg/tls-key-share-prediction/pull/10",
-      "state": "CLOSED",
-      "author": "erosmary",
-      "authorAssociation": "NONE",
-      "assignees": [],
-      "labels": [],
-      "body": "",
-      "createdAt": "2024-06-14T15:12:00Z",
-      "updatedAt": "2024-06-14T15:12:18Z",
-      "baseRepository": "tlswg/tls-key-share-prediction",
-      "baseRefName": "main",
-      "baseRefOid": "3e9292bc18aba78d16e382e4e4ca23898809d2ad",
-      "headRepository": "erosmary/tls-key-share-prediction",
-      "headRefName": "patch-1",
-      "headRefOid": "2c54d25a127c5e27e327a7f42953c6b154de2f5c",
-      "closedAt": "2024-06-14T15:12:18Z",
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
-      "reviews": []
     },
     {
       "number": 12,
