@@ -4,9 +4,9 @@
 
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                Google LLC
-Updates: 8446 (if approved)                                 15 June 2024
+Updates: 8446 (if approved)                            10 September 2024
 Intended status: Standards Track                                        
-Expires: 17 December 2024
+Expires: 14 March 2025
 
 
                         TLS Key Share Prediction
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 December 2024.
+   This Internet-Draft will expire on 14 March 2025.
 
 Copyright Notice
 
@@ -145,6 +145,18 @@ Table of Contents
    The wire format of the SvcParamValue is a sequence of 2-octet numeric
    values in network byte order.  An empty list of values is invalid, as
    is a list containing duplicates.
+
+   For example, a TLS server which prefers x25519 (29) and also supports
+   secp256r1 (23) would a tls-supported-groups SvcParamValue containing
+   29 and 23.  The presentation value would be "29,23".  The wire format
+   of the SvcParamValue would be four octets, represented in hexadecimal
+   as 001d0017.
+
+   The following is an example of the value appearing in a complete DNS
+   record in the presentation syntax:
+
+   example.net.  7200  IN SVCB 3 server.example.net. (
+       port="8004" tls-supported-groups=29,23 )
 
 3.2.  Configuring Services
 
