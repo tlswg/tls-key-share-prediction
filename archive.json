@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-09-10T01:26:26.980325+00:00",
+  "timestamp": "2024-09-12T01:25:44.019682+00:00",
   "repo": "tlswg/tls-key-share-prediction",
   "labels": [
     {
@@ -216,15 +216,15 @@
       "id": "I_kwDOKfBef86H4tdb",
       "title": "Example",
       "url": "https://github.com/tlswg/tls-key-share-prediction/issues/8",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "DNS RFCs always include the presentation form of something.  It's almost pointless here, but it might solidify things more.",
       "createdAt": "2024-05-05T23:30:30Z",
-      "updatedAt": "2024-05-05T23:30:30Z",
-      "closedAt": null,
+      "updatedAt": "2024-09-10T20:51:12Z",
+      "closedAt": "2024-09-10T20:51:12Z",
       "comments": []
     },
     {
@@ -383,24 +383,26 @@
       "id": "PR_kwDOKfBef85xdoF-",
       "title": "Add an example encoding, for both presentation and wire formats",
       "url": "https://github.com/tlswg/tls-key-share-prediction/pull/9",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Fixes #8.",
       "createdAt": "2024-06-04T19:08:13Z",
-      "updatedAt": "2024-06-13T21:57:51Z",
+      "updatedAt": "2024-09-10T20:51:14Z",
       "baseRepository": "tlswg/tls-key-share-prediction",
       "baseRefName": "main",
       "baseRefOid": "3e9292bc18aba78d16e382e4e4ca23898809d2ad",
       "headRepository": "tlswg/tls-key-share-prediction",
       "headRefName": "example",
       "headRefOid": "d79c228395a592bc9adf8a8a90fcd6ec4e134db5",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-09-10T20:51:11Z",
+      "mergedAt": "2024-09-10T20:51:11Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "5bedece39d7bb79ab81ac5e39192a001c8a67432"
+      },
       "comments": [
         {
           "author": "davidben",
@@ -437,6 +439,19 @@
               "updatedAt": "2024-06-11T03:34:15Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOKfBef86It6EN",
+          "commit": {
+            "abbreviatedOid": "d79c228"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-09-10T20:45:26Z",
+          "updatedAt": "2024-09-10T20:45:26Z",
+          "comments": []
         }
       ]
     },
