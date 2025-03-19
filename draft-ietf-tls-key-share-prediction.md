@@ -117,7 +117,7 @@ This document updates the Service Parameter Keys registry {{RFC9460}} with the f
 
 | Number | Name                 | Meaning                  | Format Reference            | Change Controller |
 |--------|----------------------|--------------------------|-----------------------------|-------------------|
-| TBD    | tls-supported-groups | Supported groups in TLS  | (this document) {{format}}  | IETF              |
+| 9      | tls-supported-groups | Supported groups in TLS  | (this document) {{format}}  | IETF              |
 
 
 --- back
