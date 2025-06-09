@@ -109,7 +109,7 @@ However, some servers prioritize round-trip times over preference orders. That i
 
 As these semantics were already prescribed in {{RFC8446}}, it is safe for clients to admit attacker control over the set of named groups preferred in `key_share`, provided `supported_groups` always reflects the true client preference. Servers are expected to evaluate the combination of `key_share` and `supported_groups` according to the defined semantics and their selection goals.
 
-To reduce the risk of downgrade attacks with incorrectly deployed servers, clients MAY choose to ignore `tls-supported-groups` when the result would be to a predict a less preferred group. For example, a client that implements a combination of post-quantum groups and ECDH groups MAY limit its influence to predicting post-quantum groups. This optimizes transitions between post-quantum groups, where the bandwidth concerns are more pronounced, but means ECDH-only servers cannot take advantage of the mechanism.
+To reduce the risk of downgrade attacks with incorrectly deployed servers, clients MAY choose to ignore `tls-supported-groups` when the result would predict a less preferred group. For example, a client that implements a combination of post-quantum groups and ECDH groups MAY limit its influence to predicting post-quantum groups. This optimizes transitions between post-quantum groups, where the bandwidth concerns are more pronounced, but means ECDH-only servers cannot take advantage of the mechanism.
 
 # IANA Considerations
 
