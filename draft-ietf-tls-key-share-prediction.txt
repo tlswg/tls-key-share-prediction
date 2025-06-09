@@ -241,10 +241,10 @@ Table of Contents
 
    To reduce the risk of downgrade attacks with incorrectly deployed
    servers, clients MAY choose to ignore tls-supported-groups when the
-   result would be to a predict a less preferred group.  For example, a
-   client that implements a combination of post-quantum groups and ECDH
-   groups MAY limit its influence to predicting post-quantum groups.
-   This optimizes transitions between post-quantum groups, where the
+   result would predict a less preferred group.  For example, a client
+   that implements a combination of post-quantum groups and ECDH groups
+   MAY limit its influence to predicting post-quantum groups.  This
+   optimizes transitions between post-quantum groups, where the
    bandwidth concerns are more pronounced, but means ECDH-only servers
    cannot take advantage of the mechanism.
 
