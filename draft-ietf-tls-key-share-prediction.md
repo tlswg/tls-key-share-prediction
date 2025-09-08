@@ -97,7 +97,7 @@ Although this service parameter is intended to reduce key share mispredictions, 
 
 * The client has fetched a stale HTTPS or SVCB record that no longer reflects the server configuration
 
-* The server is in the process of deploying a change to named group configuration, and different server instances temporary evaluate different configuration
+* The server is in the process of deploying a change to named group configuration, and different server instances temporarily evaluate different configuration
 
 * The client was unable to fetch the HTTPS or SVCB record
 
