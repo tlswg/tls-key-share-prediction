@@ -83,7 +83,13 @@ Services SHOULD include supported TLS named groups, in order of decreasing prefe
 
 ## Client Behavior
 
-When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server's list against its configuration to predict which named group will be chosen. When evaluating the server's list, the client MUST ignore any codepoints that it does not support or recognize. If there is a named group in common, the client MAY send a `key_share` extension containing just that named group in the initial ClientHello. To avoid downgrade attacks, the client MUST continue to send its full preferences in the `supported_groups` extension. See {{security-considerations}} for additional discussion on downgrades.
+When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server's list against its configuration to predict which named group will be chosen. When evaluating the server's list, the client MUST ignore any codepoints that it does not support or recognize.
+
+If the client successfully predicts a named group, the client SHOULD send a `key_share` extension containing just that named group in the initial ClientHello. The client MAY continue to send other key shares to reduce mispredictions (see {{misprediction}}), though this comes at additional network and computational cost. The client MAY also ignore the prediction, e.g., it chooses not to apply this process to some groups (see {{security-considerations}}).
+
+If there were no named groups in common, the client SHOULD proceed as if the `tls-supported-groups` parameter was not present and predict some default set of key shares. The HTTPS or SVCB record may have been stale, so it is possible the server still has a named group in common.
+
+To avoid downgrade attacks, the client MUST continue to send its full preferences in the `supported_groups` extension. See {{security-considerations}} for additional discussion on downgrades.
 
 ## Misprediction
 
