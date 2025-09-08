@@ -30,6 +30,7 @@ author:
 normative:
 
 informative:
+...
 
 --- abstract
 
@@ -107,15 +108,19 @@ Clients and servers MUST correctly handle mispredictions by responding to and se
 
 # Security Considerations
 
-This document introduces a mechanism for clients to vary the `key_share` extension based on DNS. DNS responses are unauthenticated in many deployments, so this can permit attacker influence over the client's predicted named groups. That, in turn, can influence the named group selected by the TLS server, as TLS's downgrade protections only extend to the ClientHello itself. However, the client continues to send its full preferences in `supported_groups`, so this influence is limited by the server's named group selection policy:
+This document introduces a mechanism for clients to vary the `key_share` extension based on DNS. DNS responses are unauthenticated in many deployments. An attacker may be able to forge an HTTPS or SVCB record and influence the client's predicted named groups. That, in turn, can influence the named group selected by the TLS server, as TLS's downgrade protections only extend to the ClientHello itself.
 
-Servers which select purely based on preference orders will first select a named group on `supported_groups`, and then consider `key_share` only to send HelloRetryRequest or ServerHello. When connecting to such servers, attackers cannot influence the selection with this mechanism.
+Provided the client's `supported_groups` list always reflects the unmodified client preference list, this is safe. The scope of attacker influence depends on how the server selects a group. Servers are expected to evaluate the combination of `key_share` and `supported_groups` according to their selection goals and the definitions in {{RFC8446}}. When deciding between multiple common groups, a server might consider:
 
-However, some servers prioritize round-trip times over preference orders. That is, when choosing between a named group in `key_share` and a more preferable (e.g. more secure) named group not in `key_share`, these servers will select the less preferable one in `key_share`. In this case, an attacker may be able to influence the selection by forging an HTTPS or SVCB record. Per {{Section 4.2.8 of RFC8446}}, the client's `key_share` extension does not reflect its full preference list in `supported_groups`. Thus, this server behavior is only appropriate when the two options are of comparable preference, such that round trip concerns dominate. In particular, it is NOT RECOMMENDED when choosing between post-quantum and classical named groups.
+* The server's local preferences, picking one it considers best.
 
-As these semantics were already prescribed in {{RFC8446}}, it is safe for clients to admit attacker control over the set of named groups preferred in `key_share`, provided `supported_groups` always reflects the true client preference. Servers are expected to evaluate the combination of `key_share` and `supported_groups` according to the defined semantics and their selection goals.
+* The client's preference order in `supported_groups`, picking one the client considers best.
 
-To reduce the risk of downgrade attacks with incorrectly deployed servers, clients MAY choose to ignore `tls-supported-groups` when the result would predict a less preferred group. For example, a client that implements a combination of post-quantum groups and ECDH groups MAY limit its influence to predicting post-quantum groups. This optimizes transitions between post-quantum groups, where the bandwidth concerns are more pronounced, but means ECDH-only servers cannot take advantage of the mechanism.
+* Which groups appear in `key_share`, picking one that avoids a HelloRetryRequest.
+
+The last case, presence in `key_share`, is under attacker influence in this mechanism. However, {{Section 4.2.8 of RFC8446}} already permits the client to omit its most preferred groups in `key_share`. Servers are thus expected to only select by `key_share` when they opt to consider neither the client's preference nor their own. That is, it is only appropriate in cases where the two groups have comparable preference, such that round-trip costs dominate. Servers SHOULD NOT use `key_share` to select a classical named group over a post-quantum named group.
+
+To reduce the risk of downgrade attacks with incorrectly deployed servers, clients MAY choose to ignore `tls-supported-groups` when the result would predict a less preferred group. For example, a client might prefer post-quantum groups, but support ECDH groups with older servers. It MAY then ignore DNS-based ECDH predictions, limiting `tls-supported-groups` to post-quantum options. In this case, transitions between post-quantum groups, where the bandwidth concerns are more pronounced, remain optimized, but ECDH-only servers cannot take advantage of `tls-supported-groups`.
 
 # IANA Considerations
 
