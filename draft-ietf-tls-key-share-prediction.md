@@ -39,7 +39,7 @@ This document defines a mechanism for servers to communicate supported key share
 
 # Introduction
 
-Named groups in TLS 1.3 {{!RFC8446}} are negotiated with two lists in the ClientHello: The client sends its full preferences in the `supported_groups` extension, but also generates key shares for a subset in the `key_share` extension. Named groups in this subset may be used in one, while named groups outside the subset requires a HelloRetryRequest and two round trips. The additional round trip is undesirable for performance, but unused key shares consume network and computational resources, so clients often do not generate key shares for all groups.
+Named groups in TLS 1.3 {{!RFC8446}} are negotiated with two lists in the ClientHello: The client sends its full preferences in the `supported_groups` extension, but also generates key shares for a subset in the `key_share` extension. Named groups in this subset can be used in one round trip, while named groups outside the subset require a HelloRetryRequest and hence two round trips. The additional round trip is undesirable for performance, but unused key shares consume network and computational resources, so clients often do not generate key shares for all groups.
 
 Post-quantum key encapsulation methods (KEMs) have large keys and ciphertexts, so network costs are particularly pronounced. As a TLS ecosystem transitions from one post-quantum KEM to another, it is challenging to pick key shares without prior knowledge of the server's policies:
 
@@ -125,4 +125,4 @@ This document updates the Service Parameter Keys registry {{RFC9460}} with the f
 # Acknowledgments
 {:numbered="false"}
 
-The author would like to thank David Adrian, Bob Beck, Sophie Schmieg, Martin Thomson, and Bas Westerbaan for discussions and review of this document.
+The author would like to thank David Adrian, Bob Beck, Marc Penninga, Sophie Schmieg, Martin Thomson, and Bas Westerbaan for discussions and review of this document.
