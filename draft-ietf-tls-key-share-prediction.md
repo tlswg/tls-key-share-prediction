@@ -33,7 +33,7 @@ informative:
 
 --- abstract
 
-This document defines a mechanism for servers to communicate key share preferences in DNS. Clients may use this information to reduce TLS handshake round-trips.
+This document defines a mechanism for servers to communicate supported key share algorithms in DNS. Clients may use this information to reduce TLS handshake round-trips.
 
 --- middle
 
@@ -47,7 +47,7 @@ Post-quantum key encapsulation methods (KEMs) have large keys and ciphertexts, s
 2. Predicting the old post-quantum KEM adds a round-trip cost to newer servers. Servers will be unlikely to transition as a result.
 3. Predicting the new post-quantum KEM adds a round-trip cost to older servers. Particularly early in the transition, when most servers do not implement the new KEM, this may significantly regress performance.
 
-This document defines a method for servers to declare their named group preferences in DNS, using SVCB or HTTPS resource records {{!RFC9460}}. This allows the client to predict key shares more accurately.
+This document defines a method for servers to declare their supported named groups in DNS, using SVCB or HTTPS resource records {{!RFC9460}}. This allows the client to predict key shares more accurately.
 
 
 # Conventions and Definitions
@@ -60,7 +60,7 @@ when, and only when, they appear in all capitals, as shown here.
 
 # DNS Service Parameter
 
-This document defines the `tls-supported-groups` SvcParamKey {{RFC9460}}, which specifies the endpoint's TLS supported group preferences, as a non-empty sequence of TLS NamedGroup codepoints in order of decreasing preference, with no duplicates. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
+This document defines the `tls-supported-groups` SvcParamKey {{RFC9460}}, which specifies the endpoint's supported TLS named groups, as a non-empty sequence of TLS NamedGroup codepoints in order of decreasing preference, with no duplicates. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
 
 ## Format
 
@@ -79,19 +79,19 @@ example.net.  7200  IN SVCB 3 server.example.net. (
 
 ## Configuring Services
 
-Services SHOULD include supported TLS named groups, in order of decreasing preference in the `tls-supported-groups` parameter of their HTTPS or SVCB endpoints. As TLS preferences are updated, services SHOULD update the DNS record to match. Services MAY include GREASE values {{!RFC8701}} in this list.
+Services SHOULD include supported TLS named groups, in order of decreasing preference in the `tls-supported-groups` parameter of their HTTPS or SVCB endpoints. As TLS configuration is updated, services SHOULD update the DNS record to match. Services MAY include GREASE values {{!RFC8701}} in this list.
 
 ## Client Behavior
 
-When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server preferences against its own to predict which named group will be chosen. When evaluating the server preferences, the client MUST ignore any codepoints that it does not support or recognize. If there is a named group in common, the client MAY send a `key_share` extension containing just that named group in the initial ClientHello. To avoid downgrade attacks, the client MUST continue to send its full preferences in the `supported_groups` extension. See {{security-considerations}} for additional discussion on downgrades.
+When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server's list against its configuration to predict which named group will be chosen. When evaluating the server's list, the client MUST ignore any codepoints that it does not support or recognize. If there is a named group in common, the client MAY send a `key_share` extension containing just that named group in the initial ClientHello. To avoid downgrade attacks, the client MUST continue to send its full preferences in the `supported_groups` extension. See {{security-considerations}} for additional discussion on downgrades.
 
 ## Misprediction
 
 Although this service parameter is intended to reduce key share mispredictions, mispredictions may still occur in some scenarios. For example:
 
-* The client has fetched a stale HTTPS or SVCB record that no longer reflects the server preferences
+* The client has fetched a stale HTTPS or SVCB record that no longer reflects the server configuration
 
-* The server is in the process of deploying a change to named group preferences, and different server instances temporary evaluate different preferences
+* The server is in the process of deploying a change to named group configuration, and different server instances temporary evaluate different configuration
 
 * The client was unable to fetch the HTTPS or SVCB record
 
