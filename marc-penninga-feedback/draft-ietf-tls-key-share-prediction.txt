@@ -85,7 +85,7 @@ Table of Contents
 1.  Introduction
 
    Named groups in TLS 1.3 [RFC8446] are negotiated with two lists in
-   the ClientHello: The client sends its full preferences in the
+   the ClientHello: The client sends its supported groups in the
    supported_groups extension, but also generates key shares for a
    subset in the key_share extension.  Named groups in this subset can
    be used in one round trip, while named groups outside the subset
