@@ -4,9 +4,9 @@
 
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                Google LLC
-Updates: 8446 (if approved)                             8 September 2025
+Updates: 8446 (if approved)                            19 September 2025
 Intended status: Standards Track                                        
-Expires: 12 March 2026
+Expires: 23 March 2026
 
 
                         TLS Key Share Prediction
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 March 2026.
+   This Internet-Draft will expire on 23 March 2026.
 
 Copyright Notice
 
@@ -172,11 +172,11 @@ Table of Contents
    will be chosen.  When evaluating the server's list, the client MUST
    ignore any codepoints that it does not support or recognize.
 
-   If the client successfully predicts a named group, the client SHOULD
-   send a key_share extension containing just that named group in the
-   initial ClientHello.  The client MAY continue to send other key
-   shares to reduce mispredictions (see Section 3.4), though this comes
-   at additional network and computational cost.  The client MAY also
+   If the client predicts a named group, the client SHOULD send a
+   key_share extension containing just that named group in the initial
+   ClientHello.  The client MAY continue to send other key shares to
+   reduce mispredictions (see Section 3.4), though this comes at
+   additional network and computational cost.  The client MAY also
    ignore the prediction, e.g., it chooses not to apply this process to
    some groups (see Section 4).
 
@@ -186,9 +186,10 @@ Table of Contents
    been stale, so it is possible the server still has a named group in
    common.
 
-   To avoid downgrade attacks, the client MUST continue to send its full
-   preferences in the supported_groups extension.  See Section 4 for
-   additional discussion on downgrades.
+   This process does not modify the supported_groups extension.  To
+   avoid downgrade attacks, the client MUST continue to send all its
+   supported groups, in preference order, in supported_groups.  See
+   Section 4 for additional discussion on downgrades.
 
 3.4.  Misprediction
 
