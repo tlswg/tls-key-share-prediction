@@ -7,22 +7,22 @@
 <title>TLS Key Share Prediction</title>
 <meta content="David Benjamin" name="author">
 <meta content="
-       This document defines a mechanism for servers to communicate key share preferences in DNS. Clients may use this information to reduce TLS handshake round-trips. 
+       This document defines a mechanism for servers to communicate supported key share algorithms in DNS. Clients may use this information to reduce TLS handshake round-trips. 
     " name="description">
-<meta content="xml2rfc 3.28.1" name="generator">
+<meta content="xml2rfc 3.30.2" name="generator">
 <meta content="draft-ietf-tls-key-share-prediction-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.28.1
-    Python 3.12.10
+  xml2rfc 3.30.2
+    Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.3.8
+    platformdirs 4.4.0
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.3
+    requests 2.32.5
     setuptools 80.9.0
     wcwidth 0.2.13
 -->
@@ -1043,11 +1043,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">TLS Key Share Prediction</td>
-<td class="right">June 2025</td>
+<td class="right">September 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin</td>
-<td class="center">Expires 11 December 2025</td>
+<td class="center">Expires 24 March 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1063,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="https://www.rfc-editor.org/rfc/rfc8446" class="eref">8446</a> (if approved)</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-09" class="published">9 June 2025</time>
+<time datetime="2025-09-20" class="published">20 September 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-11">11 December 2025</time></dd>
+<dd class="expires"><time datetime="2026-03-24">24 March 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1081,7 +1081,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">TLS Key Share Prediction</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines a mechanism for servers to communicate key share preferences in DNS. Clients may use this information to reduce TLS handshake round-trips.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines a mechanism for servers to communicate supported key share algorithms in DNS. Clients may use this information to reduce TLS handshake round-trips.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1118,7 +1118,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 11 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 24 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1194,7 +1194,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">Named groups in TLS 1.3 <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> are negotiated with two lists in the ClientHello: The client sends its full preferences in the <code>supported_groups</code> extension, but also generates key shares for a subset in the <code>key_share</code> extension. Named groups in this subset may be used in one, while named groups outside the subset requires a HelloRetryRequest and two round trips. The additional round trip is undesirable for performance, but unused key shares consume network and computational resources, so clients often do not generate key shares for all groups.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">Named groups in TLS 1.3 <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> are negotiated with two lists in the ClientHello: The client sends its supported groups in the <code>supported_groups</code> extension, but also generates key shares for a subset in the <code>key_share</code> extension. Named groups in this subset can be used in one round trip, while named groups outside the subset require a HelloRetryRequest and hence two round trips. The additional round trip is undesirable for performance, but unused key shares consume network and computational resources, so clients often do not generate key shares for all groups.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Post-quantum key encapsulation methods (KEMs) have large keys and ciphertexts, so network costs are particularly pronounced. As a TLS ecosystem transitions from one post-quantum KEM to another, it is challenging to pick key shares without prior knowledge of the server's policies:<a href="#section-1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-1-3">
 <li id="section-1-3.1">
@@ -1207,7 +1207,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
           <p id="section-1-3.3.1">Predicting the new post-quantum KEM adds a round-trip cost to older servers. Particularly early in the transition, when most servers do not implement the new KEM, this may significantly regress performance.<a href="#section-1-3.3.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-1-4">This document defines a method for servers to declare their named group preferences in DNS, using SVCB or HTTPS resource records <span>[<a href="#RFC9460" class="cite xref">RFC9460</a>]</span>. This allows the client to predict key shares more accurately.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">This document defines a method for servers to declare their supported named groups in DNS, using SVCB or HTTPS resource records <span>[<a href="#RFC9460" class="cite xref">RFC9460</a>]</span>. This allows the client to predict key shares more accurately.<a href="#section-1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1226,7 +1226,7 @@ when, and only when, they appear in all capitals, as shown here.<a href="#sectio
       <h2 id="name-dns-service-parameter">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-dns-service-parameter" class="section-name selfRef">DNS Service Parameter</a>
       </h2>
-<p id="section-3-1">This document defines the <code>tls-supported-groups</code> SvcParamKey <span>[<a href="#RFC9460" class="cite xref">RFC9460</a>]</span>, which specifies the endpoint's TLS supported group preferences, as a non-empty sequence of TLS NamedGroup codepoints in order of decreasing preference, with no duplicates. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">This document defines the <code>tls-supported-groups</code> SvcParamKey <span>[<a href="#RFC9460" class="cite xref">RFC9460</a>]</span>, which specifies the endpoint's supported TLS named groups, as a non-empty sequence of TLS NamedGroup codepoints in order of decreasing preference, with no duplicates. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div id="format">
 <section id="section-3.1">
         <h3 id="name-format">
@@ -1249,7 +1249,7 @@ example.net.  7200  IN SVCB 3 server.example.net. (
         <h3 id="name-configuring-services">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-configuring-services" class="section-name selfRef">Configuring Services</a>
         </h3>
-<p id="section-3.2-1">Services SHOULD include supported TLS named groups, in order of decreasing preference in the <code>tls-supported-groups</code> parameter of their HTTPS or SVCB endpoints. As TLS preferences are updated, services SHOULD update the DNS record to match. Services MAY include GREASE values <span>[<a href="#RFC8701" class="cite xref">RFC8701</a>]</span> in this list.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">Services SHOULD include supported TLS named groups, in order of decreasing preference in the <code>tls-supported-groups</code> parameter of their HTTPS or SVCB endpoints. As TLS configuration is updated, services SHOULD update the DNS record to match. Services MAY include GREASE values <span>[<a href="#RFC8701" class="cite xref">RFC8701</a>]</span> in this list.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="client-behavior">
@@ -1257,7 +1257,10 @@ example.net.  7200  IN SVCB 3 server.example.net. (
         <h3 id="name-client-behavior">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-client-behavior" class="section-name selfRef">Client Behavior</a>
         </h3>
-<p id="section-3.3-1">When connecting to a service endpoint whose HTTPS or SVCB record contains the <code>tls-supported-groups</code> parameter, the client evaluates the server preferences against its own to predict which named group will be chosen. When evaluating the server preferences, the client MUST ignore any codepoints that it does not support or recognize. If there is a named group in common, the client MAY send a <code>key_share</code> extension containing just that named group in the initial ClientHello. To avoid downgrade attacks, the client MUST continue to send its full preferences in the <code>supported_groups</code> extension. See <a href="#security-considerations" class="auto internal xref">Section 4</a> for additional discussion on downgrades.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">When connecting to a service endpoint whose HTTPS or SVCB record contains the <code>tls-supported-groups</code> parameter, the client evaluates the server's list against its configuration to predict which named group will be chosen. When evaluating the server's list, the client MUST ignore any codepoints that it does not support or recognize.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">If the client predicts a named group, the client SHOULD send a <code>key_share</code> extension containing just that named group in the initial ClientHello. The client MAY continue to send other key shares to reduce mispredictions (see <a href="#misprediction" class="auto internal xref">Section 3.4</a>), though this comes at additional network and computational cost. The client MAY also ignore the prediction, e.g., it chooses not to apply this process to some groups (see <a href="#security-considerations" class="auto internal xref">Section 4</a>).<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">If there were no named groups in common, the client SHOULD proceed as if the <code>tls-supported-groups</code> parameter was not present and predict some default set of key shares. The HTTPS or SVCB record may have been stale, so it is possible the server still has a named group in common.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">This process does not modify the <code>supported_groups</code> extension. To avoid downgrade attacks, the client MUST continue to send all its supported groups, in preference order, in <code>supported_groups</code>. See <a href="#security-considerations" class="auto internal xref">Section 4</a> for additional discussion on downgrades.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="misprediction">
@@ -1268,10 +1271,10 @@ example.net.  7200  IN SVCB 3 server.example.net. (
 <p id="section-3.4-1">Although this service parameter is intended to reduce key share mispredictions, mispredictions may still occur in some scenarios. For example:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.4-2.1">
-            <p id="section-3.4-2.1.1">The client has fetched a stale HTTPS or SVCB record that no longer reflects the server preferences<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-3.4-2.1.1">The client has fetched a stale HTTPS or SVCB record that no longer reflects the server configuration<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.4-2.2">
-            <p id="section-3.4-2.2.1">The server is in the process of deploying a change to named group preferences, and different server instances temporary evaluate different preferences<a href="#section-3.4-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-3.4-2.2.1">The server is in the process of deploying a change to named group configuration, and different server instances temporarily evaluate different configuration<a href="#section-3.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.4-2.3">
             <p id="section-3.4-2.3.1">The client was unable to fetch the HTTPS or SVCB record<a href="#section-3.4-2.3.1" class="pilcrow">¶</a></p>
@@ -1290,11 +1293,21 @@ example.net.  7200  IN SVCB 3 server.example.net. (
       <h2 id="name-security-considerations">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-4-1">This document introduces a mechanism for clients to vary the <code>key_share</code> extension based on DNS. DNS responses are unauthenticated in many deployments, so this can permit attacker influence over the client's predicted named groups. That, in turn, can influence the named group selected by the TLS server, as TLS's downgrade protections only extend to the ClientHello itself. However, the client continues to send its full preferences in <code>supported_groups</code>, so this influence is limited by the server's named group selection policy:<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">Servers which select purely based on preference orders will first select a named group on <code>supported_groups</code>, and then consider <code>key_share</code> only to send HelloRetryRequest or ServerHello. When connecting to such servers, attackers cannot influence the selection with this mechanism.<a href="#section-4-2" class="pilcrow">¶</a></p>
-<p id="section-4-3">However, some servers prioritize round-trip times over preference orders. That is, when choosing between a named group in <code>key_share</code> and a more preferable (e.g. more secure) named group not in <code>key_share</code>, these servers will select the less preferable one in <code>key_share</code>. In this case, an attacker may be able to influence the selection by forging an HTTPS or SVCB record. Per <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.8" class="relref">Section 4.2.8</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>, the client's <code>key_share</code> extension does not reflect its full preference list in <code>supported_groups</code>. Thus, this server behavior is only appropriate when the two options are of comparable preference, such that round trip concerns dominate. In particular, it is NOT RECOMMENDED when choosing between post-quantum and classical named groups.<a href="#section-4-3" class="pilcrow">¶</a></p>
-<p id="section-4-4">As these semantics were already prescribed in <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>, it is safe for clients to admit attacker control over the set of named groups preferred in <code>key_share</code>, provided <code>supported_groups</code> always reflects the true client preference. Servers are expected to evaluate the combination of <code>key_share</code> and <code>supported_groups</code> according to the defined semantics and their selection goals.<a href="#section-4-4" class="pilcrow">¶</a></p>
-<p id="section-4-5">To reduce the risk of downgrade attacks with incorrectly deployed servers, clients MAY choose to ignore <code>tls-supported-groups</code> when the result would predict a less preferred group. For example, a client that implements a combination of post-quantum groups and ECDH groups MAY limit its influence to predicting post-quantum groups. This optimizes transitions between post-quantum groups, where the bandwidth concerns are more pronounced, but means ECDH-only servers cannot take advantage of the mechanism.<a href="#section-4-5" class="pilcrow">¶</a></p>
+<p id="section-4-1">This document introduces a mechanism for clients to vary the <code>key_share</code> extension based on DNS. DNS responses are unauthenticated in many deployments. An attacker may be able to forge an HTTPS or SVCB record and influence the client's predicted named groups. That, in turn, can influence the named group selected by the TLS server, as TLS's downgrade protections only extend to the ClientHello itself.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Provided the client's <code>supported_groups</code> list always reflects the unmodified client preference list, this is safe. The scope of attacker influence depends on how the server selects a group. Servers are expected to evaluate the combination of <code>key_share</code> and <code>supported_groups</code> according to their selection goals and the definitions in <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>. When deciding between multiple common groups, a server might consider:<a href="#section-4-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-3.1">
+          <p id="section-4-3.1.1">The server's local preferences, picking one it considers best.<a href="#section-4-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-3.2">
+          <p id="section-4-3.2.1">The client's preference order in <code>supported_groups</code>, picking one the client considers best.<a href="#section-4-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-3.3">
+          <p id="section-4-3.3.1">Which groups appear in <code>key_share</code>, picking one that avoids a HelloRetryRequest.<a href="#section-4-3.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-4-4">The last case, presence in <code>key_share</code>, is under attacker influence in this mechanism. However, <span><a href="https://rfc-editor.org/rfc/rfc8446#section-4.2.8" class="relref">Section 4.2.8</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> already permits the client to omit its most preferred groups in <code>key_share</code>. Servers are thus expected to only select by <code>key_share</code> when they opt to consider neither the client's preference nor their own. That is, it is only appropriate in cases where the two groups have comparable preference, such that round-trip costs dominate. Servers SHOULD NOT use <code>key_share</code> to select a classical named group over a post-quantum named group.<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">To reduce the risk of downgrade attacks with incorrectly deployed servers, clients MAY choose to ignore <code>tls-supported-groups</code> when the result would predict a less preferred group. For example, a client might prefer post-quantum groups, but support ECDH groups with older servers. It MAY then ignore DNS-based ECDH predictions, limiting <code>tls-supported-groups</code> to post-quantum options. In this case, transitions between post-quantum groups, where the bandwidth concerns are more pronounced, remain optimized, but ECDH-only servers cannot take advantage of <code>tls-supported-groups</code>.<a href="#section-4-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
@@ -1361,7 +1374,7 @@ example.net.  7200  IN SVCB 3 server.example.net. (
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-A-1">The author would like to thank David Adrian, Bob Beck, Sophie Schmieg, Martin Thomson, and Bas Westerbaan for discussions and review of this document.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">The author would like to thank David Adrian, Bob Beck, Marc Penninga, Sophie Schmieg, Martin Thomson, and Bas Westerbaan for discussions and review of this document.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
