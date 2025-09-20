@@ -30,16 +30,17 @@ author:
 normative:
 
 informative:
+...
 
 --- abstract
 
-This document defines a mechanism for servers to communicate key share preferences in DNS. Clients may use this information to reduce TLS handshake round-trips.
+This document defines a mechanism for servers to communicate supported key share algorithms in DNS. Clients may use this information to reduce TLS handshake round-trips.
 
 --- middle
 
 # Introduction
 
-Named groups in TLS 1.3 {{!RFC8446}} are negotiated with two lists in the ClientHello: The client sends its full preferences in the `supported_groups` extension, but also generates key shares for a subset in the `key_share` extension. Named groups in this subset may be used in one, while named groups outside the subset requires a HelloRetryRequest and two round trips. The additional round trip is undesirable for performance, but unused key shares consume network and computational resources, so clients often do not generate key shares for all groups.
+Named groups in TLS 1.3 {{!RFC8446}} are negotiated with two lists in the ClientHello: The client sends its supported groups in the `supported_groups` extension, but also generates key shares for a subset in the `key_share` extension. Named groups in this subset can be used in one round trip, while named groups outside the subset require a HelloRetryRequest and hence two round trips. The additional round trip is undesirable for performance, but unused key shares consume network and computational resources, so clients often do not generate key shares for all groups.
 
 Post-quantum key encapsulation methods (KEMs) have large keys and ciphertexts, so network costs are particularly pronounced. As a TLS ecosystem transitions from one post-quantum KEM to another, it is challenging to pick key shares without prior knowledge of the server's policies:
 
@@ -47,7 +48,7 @@ Post-quantum key encapsulation methods (KEMs) have large keys and ciphertexts, s
 2. Predicting the old post-quantum KEM adds a round-trip cost to newer servers. Servers will be unlikely to transition as a result.
 3. Predicting the new post-quantum KEM adds a round-trip cost to older servers. Particularly early in the transition, when most servers do not implement the new KEM, this may significantly regress performance.
 
-This document defines a method for servers to declare their named group preferences in DNS, using SVCB or HTTPS resource records {{!RFC9460}}. This allows the client to predict key shares more accurately.
+This document defines a method for servers to declare their supported named groups in DNS, using SVCB or HTTPS resource records {{!RFC9460}}. This allows the client to predict key shares more accurately.
 
 
 # Conventions and Definitions
@@ -60,7 +61,7 @@ when, and only when, they appear in all capitals, as shown here.
 
 # DNS Service Parameter
 
-This document defines the `tls-supported-groups` SvcParamKey {{RFC9460}}, which specifies the endpoint's TLS supported group preferences, as a non-empty sequence of TLS NamedGroup codepoints in order of decreasing preference, with no duplicates. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
+This document defines the `tls-supported-groups` SvcParamKey {{RFC9460}}, which specifies the endpoint's supported TLS named groups, as a non-empty sequence of TLS NamedGroup codepoints in order of decreasing preference, with no duplicates. This allows clients connecting to the endpoint to reduce the likelihood of needing a HelloRetryRequest.
 
 ## Format
 
@@ -79,19 +80,25 @@ example.net.  7200  IN SVCB 3 server.example.net. (
 
 ## Configuring Services
 
-Services SHOULD include supported TLS named groups, in order of decreasing preference in the `tls-supported-groups` parameter of their HTTPS or SVCB endpoints. As TLS preferences are updated, services SHOULD update the DNS record to match. Services MAY include GREASE values {{!RFC8701}} in this list.
+Services SHOULD include supported TLS named groups, in order of decreasing preference in the `tls-supported-groups` parameter of their HTTPS or SVCB endpoints. As TLS configuration is updated, services SHOULD update the DNS record to match. Services MAY include GREASE values {{!RFC8701}} in this list.
 
 ## Client Behavior
 
-When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server preferences against its own to predict which named group will be chosen. When evaluating the server preferences, the client MUST ignore any codepoints that it does not support or recognize. If there is a named group in common, the client MAY send a `key_share` extension containing just that named group in the initial ClientHello. To avoid downgrade attacks, the client MUST continue to send its full preferences in the `supported_groups` extension. See {{security-considerations}} for additional discussion on downgrades.
+When connecting to a service endpoint whose HTTPS or SVCB record contains the `tls-supported-groups` parameter, the client evaluates the server's list against its configuration to predict which named group will be chosen. When evaluating the server's list, the client MUST ignore any codepoints that it does not support or recognize.
+
+If the client predicts a named group, the client SHOULD send a `key_share` extension containing just that named group in the initial ClientHello. The client MAY continue to send other key shares to reduce mispredictions (see {{misprediction}}), though this comes at additional network and computational cost. The client MAY also ignore the prediction, e.g., it chooses not to apply this process to some groups (see {{security-considerations}}).
+
+If there were no named groups in common, the client SHOULD proceed as if the `tls-supported-groups` parameter was not present and predict some default set of key shares. The HTTPS or SVCB record may have been stale, so it is possible the server still has a named group in common.
+
+This process does not modify the `supported_groups` extension. To avoid downgrade attacks, the client MUST continue to send all its supported groups, in preference order, in `supported_groups`. See {{security-considerations}} for additional discussion on downgrades.
 
 ## Misprediction
 
 Although this service parameter is intended to reduce key share mispredictions, mispredictions may still occur in some scenarios. For example:
 
-* The client has fetched a stale HTTPS or SVCB record that no longer reflects the server preferences
+* The client has fetched a stale HTTPS or SVCB record that no longer reflects the server configuration
 
-* The server is in the process of deploying a change to named group preferences, and different server instances temporary evaluate different preferences
+* The server is in the process of deploying a change to named group configuration, and different server instances temporarily evaluate different configuration
 
 * The client was unable to fetch the HTTPS or SVCB record
 
@@ -101,15 +108,19 @@ Clients and servers MUST correctly handle mispredictions by responding to and se
 
 # Security Considerations
 
-This document introduces a mechanism for clients to vary the `key_share` extension based on DNS. DNS responses are unauthenticated in many deployments, so this can permit attacker influence over the client's predicted named groups. That, in turn, can influence the named group selected by the TLS server, as TLS's downgrade protections only extend to the ClientHello itself. However, the client continues to send its full preferences in `supported_groups`, so this influence is limited by the server's named group selection policy:
+This document introduces a mechanism for clients to vary the `key_share` extension based on DNS. DNS responses are unauthenticated in many deployments. An attacker may be able to forge an HTTPS or SVCB record and influence the client's predicted named groups. That, in turn, can influence the named group selected by the TLS server, as TLS's downgrade protections only extend to the ClientHello itself.
 
-Servers which select purely based on preference orders will first select a named group on `supported_groups`, and then consider `key_share` only to send HelloRetryRequest or ServerHello. When connecting to such servers, attackers cannot influence the selection with this mechanism.
+Provided the client's `supported_groups` list always reflects the unmodified client preference list, this is safe. The scope of attacker influence depends on how the server selects a group. Servers are expected to evaluate the combination of `key_share` and `supported_groups` according to their selection goals and the definitions in {{RFC8446}}. When deciding between multiple common groups, a server might consider:
 
-However, some servers prioritize round-trip times over preference orders. That is, when choosing between a named group in `key_share` and a more preferable (e.g. more secure) named group not in `key_share`, these servers will select the less preferable one in `key_share`. In this case, an attacker may be able to influence the selection by forging an HTTPS or SVCB record. Per {{Section 4.2.8 of RFC8446}}, the client's `key_share` extension does not reflect its full preference list in `supported_groups`. Thus, this server behavior is only appropriate when the two options are of comparable preference, such that round trip concerns dominate. In particular, it is NOT RECOMMENDED when choosing between post-quantum and classical named groups.
+* The server's local preferences, picking one it considers best.
 
-As these semantics were already prescribed in {{RFC8446}}, it is safe for clients to admit attacker control over the set of named groups preferred in `key_share`, provided `supported_groups` always reflects the true client preference. Servers are expected to evaluate the combination of `key_share` and `supported_groups` according to the defined semantics and their selection goals.
+* The client's preference order in `supported_groups`, picking one the client considers best.
 
-To reduce the risk of downgrade attacks with incorrectly deployed servers, clients MAY choose to ignore `tls-supported-groups` when the result would predict a less preferred group. For example, a client that implements a combination of post-quantum groups and ECDH groups MAY limit its influence to predicting post-quantum groups. This optimizes transitions between post-quantum groups, where the bandwidth concerns are more pronounced, but means ECDH-only servers cannot take advantage of the mechanism.
+* Which groups appear in `key_share`, picking one that avoids a HelloRetryRequest.
+
+The last case, presence in `key_share`, is under attacker influence in this mechanism. However, {{Section 4.2.8 of RFC8446}} already permits the client to omit its most preferred groups in `key_share`. Servers are thus expected to only select by `key_share` when they opt to consider neither the client's preference nor their own. That is, it is only appropriate in cases where the two groups have comparable preference, such that round-trip costs dominate. Servers SHOULD NOT use `key_share` to select a classical named group over a post-quantum named group.
+
+To reduce the risk of downgrade attacks with incorrectly deployed servers, clients MAY choose to ignore `tls-supported-groups` when the result would predict a less preferred group. For example, a client might prefer post-quantum groups, but support ECDH groups with older servers. It MAY then ignore DNS-based ECDH predictions, limiting `tls-supported-groups` to post-quantum options. In this case, transitions between post-quantum groups, where the bandwidth concerns are more pronounced, remain optimized, but ECDH-only servers cannot take advantage of `tls-supported-groups`.
 
 # IANA Considerations
 
@@ -125,4 +136,4 @@ This document updates the Service Parameter Keys registry {{RFC9460}} with the f
 # Acknowledgments
 {:numbered="false"}
 
-The author would like to thank David Adrian, Bob Beck, Sophie Schmieg, Martin Thomson, and Bas Westerbaan for discussions and review of this document.
+The author would like to thank David Adrian, Bob Beck, Marc Penninga, Sophie Schmieg, Martin Thomson, and Bas Westerbaan for discussions and review of this document.
