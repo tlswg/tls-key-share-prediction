@@ -4,9 +4,9 @@
 
 Transport Layer Security                                     D. Benjamin
 Internet-Draft                                                Google LLC
-Updates: 8446 (if approved)                                19 March 2026
+Updates: 8446 (if approved)                              15 October 2026
 Intended status: Standards Track                                        
-Expires: 20 September 2026
+Expires: 18 April 2027
 
 
                         TLS Key Share Prediction
@@ -51,7 +51,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 September 2026.
+   This Internet-Draft will expire on 18 April 2027.
 
 Copyright Notice
 
